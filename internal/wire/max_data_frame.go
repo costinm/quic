@@ -20,7 +20,7 @@ func ParseMaxDataFrame(r *bytes.Reader, version protocol.VersionNumber) (*MaxDat
 	}
 
 	frame := &MaxDataFrame{}
-	byteOffset, err := utils.GetByteOrder(version).ReadUint64(r)
+	byteOffset, err := utils.ReadVarInt(r)
 	if err != nil {
 		return nil, err
 	}
@@ -38,14 +38,15 @@ func (f *MaxDataFrame) Write(b *bytes.Buffer, version protocol.VersionNumber) er
 		}).Write(b, version)
 	}
 	b.WriteByte(0x4)
-	utils.GetByteOrder(version).WriteUint64(b, uint64(f.ByteOffset))
+	utils.WriteVarInt(b, uint64(f.ByteOffset))
 	return nil
 }
 
 // MinLength of a written frame
 func (f *MaxDataFrame) MinLength(version protocol.VersionNumber) (protocol.ByteCount, error) {
-	if !version.UsesMaxDataFrame() { // writing this frame would result in a gQUIC WINDOW_UPDATE being written, which is longer
+	// writing this frame would result in a gQUIC WINDOW_UPDATE being written, which has a different length
+	if !version.UsesMaxDataFrame() {
 		return 1 + 4 + 8, nil
 	}
-	return 1 + 8, nil
+	return 1 + utils.VarIntLen(uint64(f.ByteOffset)), nil
 }

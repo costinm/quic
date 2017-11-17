@@ -1,7 +1,5 @@
 package protocol
 
-import "math"
-
 // A PacketNumber in QUIC
 type PacketNumber uint64
 
@@ -41,13 +39,13 @@ const (
 type ConnectionID uint64
 
 // A StreamID in QUIC
-type StreamID uint32
+type StreamID uint64
 
 // A ByteCount in QUIC
 type ByteCount uint64
 
 // MaxByteCount is the maximum value of a ByteCount
-const MaxByteCount = ByteCount(math.MaxUint64)
+const MaxByteCount = ByteCount(1<<62 - 1)
 
 // MaxReceivePacketSize maximum packet size of any QUIC packet, based on
 // ethernet's max size, minus the IP and UDP headers. IPv6 has a 40 byte header,

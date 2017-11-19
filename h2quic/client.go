@@ -14,7 +14,13 @@ import (
 	"golang.org/x/net/http2/hpack"
 	"golang.org/x/net/idna"
 
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rsa"
+	"encoding/base64"
 	quic "github.com/costinm/quicgo"
+	"github.com/costinm/quicgo/internal/crypto"
+	"github.com/costinm/quicgo/internal/handshake"
 	"github.com/costinm/quicgo/internal/protocol"
 	"github.com/costinm/quicgo/internal/utils"
 	"github.com/costinm/quicgo/qerr"
@@ -26,8 +32,8 @@ type roundTripperOpts struct {
 
 var dialAddr = quic.DialAddr
 
-// client is a HTTP2 client doing QUIC requests
-type client struct {
+// Client is a HTTP2 Client doing QUIC requests
+type Client struct {
 	mutex sync.RWMutex
 
 	tlsConf *tls.Config
@@ -39,7 +45,7 @@ type client struct {
 	handshakeErr    error
 	dialOnce        sync.Once
 
-	session       quic.Session
+	Session       quic.Session
 	headerStream  quic.Stream
 	headerErr     *qerr.QuicError
 	headerErrored chan struct{} // this channel is closed if an error occurs on the header stream
@@ -48,25 +54,25 @@ type client struct {
 	responses map[protocol.StreamID]chan *http.Response
 }
 
-var _ http.RoundTripper = &client{}
+var _ http.RoundTripper = &Client{}
 
 var defaultQuicConfig = &quic.Config{
 	RequestConnectionIDOmission: true,
 	KeepAlive:                   true,
 }
 
-// newClient creates a new client
+// newClient creates a new Client
 func newClient(
 	hostname string,
 	tlsConfig *tls.Config,
 	opts *roundTripperOpts,
 	quicConfig *quic.Config,
-) *client {
+) *Client {
 	config := defaultQuicConfig
 	if quicConfig != nil {
 		config = quicConfig
 	}
-	return &client{
+	return &Client{
 		hostname:        authorityAddr("https", hostname),
 		responses:       make(map[protocol.StreamID]chan *http.Response),
 		encryptionLevel: protocol.EncryptionUnencrypted,
@@ -78,15 +84,15 @@ func newClient(
 }
 
 // dial dials the connection
-func (c *client) dial() error {
+func (c *Client) dial() error {
 	var err error
-	c.session, err = dialAddr(c.hostname, c.tlsConf, c.config)
+	c.Session, err = dialAddr(c.hostname, c.tlsConf, c.config)
 	if err != nil {
 		return err
 	}
 
 	// once the version has been negotiated, open the header stream
-	c.headerStream, err = c.session.OpenStream()
+	c.headerStream, err = c.Session.OpenStream()
 	if err != nil {
 		return err
 	}
@@ -95,7 +101,7 @@ func (c *client) dial() error {
 	return nil
 }
 
-func (c *client) handleHeaderStream() {
+func (c *Client) handleHeaderStream() {
 	decoder := hpack.NewDecoder(4096, func(hf hpack.HeaderField) {})
 	h2framer := http2.NewFramer(nil, c.headerStream)
 
@@ -132,6 +138,24 @@ func (c *client) handleHeaderStream() {
 		if err != nil {
 			c.headerErr = qerr.Error(qerr.InternalError, err.Error())
 		}
+		s, ok := c.Session.(*quic.QuicSession)
+		if ok {
+			rsp.Header.Add("Quic-Session", fmt.Sprintf("%x", s.ConnectionID))
+			cs, ok := s.CryptoSetup.(*handshake.CryptoSetupClient)
+			if ok {
+				qcm, ok := cs.CertManager.(*crypto.QuicCertManager)
+				if ok && len(qcm.Chain) > 0 {
+					crt0 := qcm.Chain[0]
+					switch pub := crt0.PublicKey.(type) {
+					case *rsa.PublicKey:
+					case *ecdsa.PublicKey:
+						pubB := elliptic.Marshal(pub.Curve, pub.X, pub.Y)
+						rsp.Header.Add("Quic-Server", base64.RawURLEncoding.EncodeToString(pubB))
+
+					}
+				}
+			}
+		}
 		responseChan <- rsp
 	}
 
@@ -141,13 +165,13 @@ func (c *client) handleHeaderStream() {
 }
 
 // Roundtrip executes a request and returns a response
-func (c *client) RoundTrip(req *http.Request) (*http.Response, error) {
+func (c *Client) RoundTrip(req *http.Request) (*http.Response, error) {
 	// TODO: add port to address, if it doesn't have one
 	if req.URL.Scheme != "https" {
 		return nil, errors.New("quic http2: unsupported scheme")
 	}
 	if authorityAddr("https", hostnameFromRequest(req)) != c.hostname {
-		return nil, fmt.Errorf("h2quic Client BUG: RoundTrip called for the wrong client (expected %s, got %s)", c.hostname, req.Host)
+		return nil, fmt.Errorf("h2quic Client BUG: RoundTrip called for the wrong Client (expected %s, got %s)", c.hostname, req.Host)
 	}
 
 	c.dialOnce.Do(func() {
@@ -161,7 +185,7 @@ func (c *client) RoundTrip(req *http.Request) (*http.Response, error) {
 	hasBody := (req.Body != nil)
 
 	responseChan := make(chan *http.Response)
-	dataStream, err := c.session.OpenStreamSync()
+	dataStream, err := c.Session.OpenStreamSync()
 	if err != nil {
 		_ = c.CloseWithError(err)
 		return nil, err
@@ -240,7 +264,7 @@ func (c *client) RoundTrip(req *http.Request) (*http.Response, error) {
 	return res, nil
 }
 
-func (c *client) writeRequestBody(dataStream quic.Stream, body io.ReadCloser) (err error) {
+func (c *Client) writeRequestBody(dataStream quic.Stream, body io.ReadCloser) (err error) {
 	defer func() {
 		cerr := body.Close()
 		if err == nil {
@@ -257,15 +281,15 @@ func (c *client) writeRequestBody(dataStream quic.Stream, body io.ReadCloser) (e
 	return dataStream.Close()
 }
 
-// Close closes the client
-func (c *client) CloseWithError(e error) error {
-	if c.session == nil {
+// Close closes the Client
+func (c *Client) CloseWithError(e error) error {
+	if c.Session == nil {
 		return nil
 	}
-	return c.session.Close(e)
+	return c.Session.Close(e)
 }
 
-func (c *client) Close() error {
+func (c *Client) Close() error {
 	return c.CloseWithError(nil)
 }
 

@@ -20,22 +20,22 @@ type CertManager interface {
 	Verify(hostname string) error
 }
 
-type certManager struct {
-	chain  []*x509.Certificate
+type QuicCertManager struct {
+	Chain  []*x509.Certificate
 	config *tls.Config
 }
 
-var _ CertManager = &certManager{}
+var _ CertManager = &QuicCertManager{}
 
-var errNoCertificateChain = errors.New("CertManager BUG: No certicifate chain loaded")
+var errNoCertificateChain = errors.New("CertManager BUG: No certicifate Chain loaded")
 
 // NewCertManager creates a new CertManager
 func NewCertManager(tlsConfig *tls.Config) CertManager {
-	return &certManager{config: tlsConfig}
+	return &QuicCertManager{config: tlsConfig}
 }
 
-// SetData takes the byte-slice sent in the SHLO and decompresses it into the certificate chain
-func (c *certManager) SetData(data []byte) error {
+// SetData takes the byte-slice sent in the SHLO and decompresses it into the certificate Chain
+func (c *QuicCertManager) SetData(data []byte) error {
 	byteChain, err := decompressChain(data)
 	if err != nil {
 		return qerr.Error(qerr.InvalidCryptoMessageParameter, "Certificate data invalid")
@@ -50,25 +50,25 @@ func (c *certManager) SetData(data []byte) error {
 		chain[i] = cert
 	}
 
-	c.chain = chain
+	c.Chain = chain
 	return nil
 }
 
-func (c *certManager) GetCommonCertificateHashes() []byte {
+func (c *QuicCertManager) GetCommonCertificateHashes() []byte {
 	return getCommonCertificateHashes()
 }
 
-// GetLeafCert returns the leaf certificate of the certificate chain
-// it returns nil if the certificate chain has not yet been set
-func (c *certManager) GetLeafCert() []byte {
-	if len(c.chain) == 0 {
+// GetLeafCert returns the leaf certificate of the certificate Chain
+// it returns nil if the certificate Chain has not yet been set
+func (c *QuicCertManager) GetLeafCert() []byte {
+	if len(c.Chain) == 0 {
 		return nil
 	}
-	return c.chain[0].Raw
+	return c.Chain[0].Raw
 }
 
 // GetLeafCertHash calculates the FNV1a_64 hash of the leaf certificate
-func (c *certManager) GetLeafCertHash() (uint64, error) {
+func (c *QuicCertManager) GetLeafCertHash() (uint64, error) {
 	leafCert := c.GetLeafCert()
 	if leafCert == nil {
 		return 0, errNoCertificateChain
@@ -83,18 +83,18 @@ func (c *certManager) GetLeafCertHash() (uint64, error) {
 }
 
 // VerifyServerProof verifies the signature of the server config
-// it should only be called after the certificate chain has been set, otherwise it returns false
-func (c *certManager) VerifyServerProof(proof, chlo, serverConfigData []byte) bool {
-	if len(c.chain) == 0 {
+// it should only be called after the certificate Chain has been set, otherwise it returns false
+func (c *QuicCertManager) VerifyServerProof(proof, chlo, serverConfigData []byte) bool {
+	if len(c.Chain) == 0 {
 		return false
 	}
 
-	return verifyServerProof(proof, c.chain[0], chlo, serverConfigData)
+	return verifyServerProof(proof, c.Chain[0], chlo, serverConfigData)
 }
 
-// Verify verifies the certificate chain
-func (c *certManager) Verify(hostname string) error {
-	if len(c.chain) == 0 {
+// Verify verifies the certificate Chain
+func (c *QuicCertManager) Verify(hostname string) error {
+	if len(c.Chain) == 0 {
 		return errNoCertificateChain
 	}
 
@@ -102,7 +102,7 @@ func (c *certManager) Verify(hostname string) error {
 		return nil
 	}
 
-	leafCert := c.chain[0]
+	leafCert := c.Chain[0]
 
 	var opts x509.VerifyOptions
 	if c.config != nil {
@@ -117,10 +117,10 @@ func (c *certManager) Verify(hostname string) error {
 	opts.DNSName = hostname
 
 	// the first certificate is the leaf certificate, all others are intermediates
-	if len(c.chain) > 1 {
+	if len(c.Chain) > 1 {
 		intermediates := x509.NewCertPool()
-		for i := 1; i < len(c.chain); i++ {
-			intermediates.AddCert(c.chain[i])
+		for i := 1; i < len(c.Chain); i++ {
+			intermediates.AddCert(c.Chain[i])
 		}
 		opts.Intermediates = intermediates
 	}

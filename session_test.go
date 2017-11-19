@@ -140,12 +140,12 @@ var _ ackhandler.ReceivedPacketHandler = &mockReceivedPacketHandler{}
 func areSessionsRunning() bool {
 	var b bytes.Buffer
 	pprof.Lookup("goroutine").WriteTo(&b, 1)
-	return strings.Contains(b.String(), "quic-go.(*session).run")
+	return strings.Contains(b.String(), "quic-go.(*QuicSession).run")
 }
 
 var _ = Describe("Session", func() {
 	var (
-		sess          *session
+		sess          *QuicSession
 		scfg          *handshake.ServerConfig
 		mconn         *mockConnection
 		cryptoSetup   *mockCryptoSetup
@@ -189,8 +189,8 @@ var _ = Describe("Session", func() {
 			populateServerConfig(&Config{}),
 		)
 		Expect(err).NotTo(HaveOccurred())
-		sess = pSess.(*session)
-		Expect(sess.streamsMap.openStreams).To(BeEmpty())
+		sess = pSess.(*QuicSession)
+		Expect(sess.StreamsMap.openStreams).To(BeEmpty())
 	})
 
 	AfterEach(func() {
@@ -238,7 +238,7 @@ var _ = Describe("Session", func() {
 				conf,
 			)
 			Expect(err).NotTo(HaveOccurred())
-			sess = pSess.(*session)
+			sess = pSess.(*QuicSession)
 		})
 
 		It("calls the callback with the right parameters when the client didn't send an STK", func() {
@@ -260,7 +260,7 @@ var _ = Describe("Session", func() {
 
 	Context("frame handling", func() {
 		BeforeEach(func() {
-			sess.streamsMap.newStream = func(id protocol.StreamID) streamI {
+			sess.StreamsMap.newStream = func(id protocol.StreamID) streamI {
 				str := mocks.NewMockStreamI(mockCtrl)
 				str.EXPECT().StreamID().Return(id).AnyTimes()
 				if id == 1 {
@@ -272,7 +272,7 @@ var _ = Describe("Session", func() {
 
 		Context("when handling STREAM frames", func() {
 			BeforeEach(func() {
-				sess.streamsMap.UpdateMaxStreamLimit(100)
+				sess.StreamsMap.UpdateMaxStreamLimit(100)
 			})
 
 			It("makes new streams", func() {
@@ -280,8 +280,8 @@ var _ = Describe("Session", func() {
 					StreamID: 5,
 					Data:     []byte{0xde, 0xca, 0xfb, 0xad},
 				}
-				newStreamLambda := sess.streamsMap.newStream
-				sess.streamsMap.newStream = func(id protocol.StreamID) streamI {
+				newStreamLambda := sess.StreamsMap.newStream
+				sess.StreamsMap.newStream = func(id protocol.StreamID) streamI {
 					str := newStreamLambda(id)
 					if id == 5 {
 						str.(*mocks.MockStreamI).EXPECT().AddStreamFrame(f)
@@ -290,7 +290,7 @@ var _ = Describe("Session", func() {
 				}
 				err := sess.handleStreamFrame(f)
 				Expect(err).ToNot(HaveOccurred())
-				str, err := sess.streamsMap.GetOrOpenStream(5)
+				str, err := sess.StreamsMap.GetOrOpenStream(5)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(str).ToNot(BeNil())
 			})
@@ -305,8 +305,8 @@ var _ = Describe("Session", func() {
 					Offset:   2,
 					Data:     []byte{0xfb, 0xad},
 				}
-				newStreamLambda := sess.streamsMap.newStream
-				sess.streamsMap.newStream = func(id protocol.StreamID) streamI {
+				newStreamLambda := sess.StreamsMap.newStream
+				sess.StreamsMap.newStream = func(id protocol.StreamID) streamI {
 					str := newStreamLambda(id)
 					if id == 5 {
 						str.(*mocks.MockStreamI).EXPECT().AddStreamFrame(f1)
@@ -315,13 +315,13 @@ var _ = Describe("Session", func() {
 					return str
 				}
 				sess.handleStreamFrame(f1)
-				numOpenStreams := len(sess.streamsMap.openStreams)
+				numOpenStreams := len(sess.StreamsMap.openStreams)
 				sess.handleStreamFrame(f2)
-				Expect(sess.streamsMap.openStreams).To(HaveLen(numOpenStreams))
+				Expect(sess.StreamsMap.openStreams).To(HaveLen(numOpenStreams))
 			})
 
 			It("ignores STREAM frames for closed streams", func() {
-				sess.streamsMap.streams[5] = nil
+				sess.StreamsMap.streams[5] = nil
 				str, err := sess.GetOrOpenStream(5)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(str).To(BeNil()) // make sure the stream is gone
@@ -374,7 +374,7 @@ var _ = Describe("Session", func() {
 				str, err := sess.GetOrOpenStream(3)
 				Expect(err).ToNot(HaveOccurred())
 				str.(*mocks.MockStreamI).EXPECT().Finished().Return(true)
-				sess.streamsMap.DeleteClosedStreams()
+				sess.StreamsMap.DeleteClosedStreams()
 				str, err = sess.GetOrOpenStream(3)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(str).To(BeNil())
@@ -413,8 +413,8 @@ var _ = Describe("Session", func() {
 			})
 
 			It("opens a new stream when receiving a MAX_STREAM_DATA frame for an unknown stream", func() {
-				newStreamLambda := sess.streamsMap.newStream
-				sess.streamsMap.newStream = func(id protocol.StreamID) streamI {
+				newStreamLambda := sess.StreamsMap.newStream
+				sess.StreamsMap.newStream = func(id protocol.StreamID) streamI {
 					str := newStreamLambda(id)
 					if id == 5 {
 						str.(*mocks.MockStreamI).EXPECT().UpdateSendWindow(protocol.ByteCount(0x1337))
@@ -426,7 +426,7 @@ var _ = Describe("Session", func() {
 					ByteOffset: 0x1337,
 				})
 				Expect(err).ToNot(HaveOccurred())
-				str, err := sess.streamsMap.GetOrOpenStream(5)
+				str, err := sess.StreamsMap.GetOrOpenStream(5)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(str).ToNot(BeNil())
 			})
@@ -435,7 +435,7 @@ var _ = Describe("Session", func() {
 				str, err := sess.GetOrOpenStream(3)
 				Expect(err).ToNot(HaveOccurred())
 				str.(*mocks.MockStreamI).EXPECT().Finished().Return(true)
-				err = sess.streamsMap.DeleteClosedStreams()
+				err = sess.StreamsMap.DeleteClosedStreams()
 				Expect(err).ToNot(HaveOccurred())
 				str, err = sess.GetOrOpenStream(3)
 				Expect(err).ToNot(HaveOccurred())
@@ -481,7 +481,7 @@ var _ = Describe("Session", func() {
 			}()
 			_, err := sess.GetOrOpenStream(5)
 			Expect(err).ToNot(HaveOccurred())
-			sess.streamsMap.Range(func(s streamI) {
+			sess.StreamsMap.Range(func(s streamI) {
 				s.(*mocks.MockStreamI).EXPECT().Cancel(gomock.Any())
 			})
 			err = sess.handleFrames([]wire.Frame{&wire.ConnectionCloseFrame{ErrorCode: qerr.ProofInvalid, ReasonPhrase: "foobar"}}, protocol.EncryptionUnspecified)
@@ -519,7 +519,7 @@ var _ = Describe("Session", func() {
 
 		It("errors if the handshake fails", func(done Done) {
 			testErr := errors.New("crypto error")
-			sess.cryptoSetup = &mockCryptoSetup{handleErr: testErr}
+			sess.CryptoSetup = &mockCryptoSetup{handleErr: testErr}
 			go sess.run()
 			err := sess.WaitUntilHandshakeComplete()
 			Expect(err).To(MatchError(testErr))
@@ -554,7 +554,7 @@ var _ = Describe("Session", func() {
 	Context("accepting streams", func() {
 		BeforeEach(func() {
 			// don't use the mock here
-			sess.streamsMap.newStream = sess.newStream
+			sess.StreamsMap.newStream = sess.newStream
 		})
 
 		It("waits for new streams", func() {
@@ -579,7 +579,7 @@ var _ = Describe("Session", func() {
 			Expect(str.StreamID()).To(Equal(protocol.StreamID(5)))
 		})
 
-		It("stops accepting when the session is closed", func() {
+		It("stops accepting when the QuicSession is closed", func() {
 			testErr := errors.New("testErr")
 			done := make(chan struct{})
 			go func() {
@@ -594,7 +594,7 @@ var _ = Describe("Session", func() {
 			Eventually(done).Should(BeClosed())
 		})
 
-		It("stops accepting when the session is closed after version negotiation", func() {
+		It("stops accepting when the QuicSession is closed after version negotiation", func() {
 			done := make(chan struct{})
 			go func() {
 				defer GinkgoRecover()
@@ -652,7 +652,7 @@ var _ = Describe("Session", func() {
 			Expect(sess.Context().Done()).To(BeClosed())
 		})
 
-		It("closes the session in order to replace it with another QUIC version", func() {
+		It("closes the QuicSession in order to replace it with another QUIC version", func() {
 			sess.Close(errCloseSessionForNewVersion)
 			Eventually(areSessionsRunning).Should(BeFalse())
 			Expect(mconn.written).To(BeEmpty()) // no CONNECTION_CLOSE or PUBLIC_RESET sent
@@ -1153,7 +1153,7 @@ var _ = Describe("Session", func() {
 
 		BeforeEach(func() {
 			sess.unpacker = &mockUnpacker{unpackErr: qerr.Error(qerr.DecryptionFailure, "")}
-			sess.cryptoSetup = &mockCryptoSetup{}
+			sess.CryptoSetup = &mockCryptoSetup{}
 		})
 
 		It("doesn't immediately send a Public Reset after receiving too many undecryptable packets", func() {
@@ -1256,7 +1256,7 @@ var _ = Describe("Session", func() {
 
 	It("does not block if an error occurs", func(done Done) {
 		// this test basically tests that the handshakeChan has a capacity of 3
-		// The session needs to run (and close) properly, even if no one is receiving from the handshakeChan
+		// The QuicSession needs to run (and close) properly, even if no one is receiving from the handshakeChan
 		go sess.run()
 		aeadChanged <- protocol.EncryptionSecure
 		aeadChanged <- protocol.EncryptionForwardSecure
@@ -1279,7 +1279,7 @@ var _ = Describe("Session", func() {
 		}
 		paramsChan <- params
 		Eventually(func() *handshake.TransportParameters { return sess.peerParams }).Should(Equal(&params))
-		Eventually(func() uint32 { return sess.streamsMap.maxOutgoingStreams }).Should(Equal(uint32(123)))
+		Eventually(func() uint32 { return sess.StreamsMap.maxOutgoingStreams }).Should(Equal(uint32(123)))
 		// Eventually(func() (protocol.ByteCount, error) { return sess.flowControlManager.SendWindowSize(5) }).Should(Equal(protocol.ByteCount(0x5000)))
 		Eventually(func() bool { return sess.packer.omitConnectionID }).Should(BeTrue())
 		Expect(sess.Close(nil)).To(Succeed())
@@ -1349,7 +1349,7 @@ var _ = Describe("Session", func() {
 			sess.config.IdleTimeout = 9999 * time.Second
 			defer sess.Close(nil)
 			sess.lastNetworkActivityTime = time.Now().Add(-time.Minute)
-			// the handshake timeout is irrelevant here, since it depends on the time the session was created,
+			// the handshake timeout is irrelevant here, since it depends on the time the QuicSession was created,
 			// and not on the last network activity
 			done := make(chan struct{})
 			go func() {
@@ -1360,7 +1360,7 @@ var _ = Describe("Session", func() {
 			Consistently(done).ShouldNot(BeClosed())
 		})
 
-		It("closes the session due to the idle timeout after handshake", func() {
+		It("closes the QuicSession due to the idle timeout after handshake", func() {
 			sess.config.IdleTimeout = 0
 			close(aeadChanged)
 			errChan := make(chan error)
@@ -1402,9 +1402,9 @@ var _ = Describe("Session", func() {
 			str.Close()
 			str.(*stream).Cancel(nil)
 			Expect(str.(*stream).Finished()).To(BeTrue())
-			err = sess.streamsMap.DeleteClosedStreams()
+			err = sess.StreamsMap.DeleteClosedStreams()
 			Expect(err).ToNot(HaveOccurred())
-			Expect(sess.streamsMap.GetOrOpenStream(9)).To(BeNil())
+			Expect(sess.StreamsMap.GetOrOpenStream(9)).To(BeNil())
 			str, err = sess.GetOrOpenStream(9)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(str).To(BeNil())
@@ -1413,7 +1413,7 @@ var _ = Describe("Session", func() {
 			Expect(ok).To(BeFalse())
 		})
 
-		// all relevant tests for this are in the streamsMap
+		// all relevant tests for this are in the StreamsMap
 		It("opens streams synchronously", func() {
 			str, err := sess.OpenStreamSync()
 			Expect(err).ToNot(HaveOccurred())
@@ -1441,7 +1441,7 @@ var _ = Describe("Session", func() {
 				s.(*stream).CloseRemote(0)
 				_, err = s.Read([]byte("a"))
 				Expect(err).To(MatchError(io.EOF))
-				sess.streamsMap.DeleteClosedStreams()
+				sess.StreamsMap.DeleteClosedStreams()
 			}
 		})
 	})
@@ -1502,7 +1502,7 @@ var _ = Describe("Session", func() {
 
 var _ = Describe("Client Session", func() {
 	var (
-		sess        *session
+		sess        *QuicSession
 		mconn       *mockConnection
 		aeadChanged chan<- protocol.EncryptionLevel
 
@@ -1540,9 +1540,9 @@ var _ = Describe("Client Session", func() {
 			protocol.VersionWhatever,
 			nil,
 		)
-		sess = sessP.(*session)
+		sess = sessP.(*QuicSession)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(sess.streamsMap.openStreams).To(BeEmpty())
+		Expect(sess.StreamsMap.openStreams).To(BeEmpty())
 	})
 
 	AfterEach(func() {
@@ -1557,7 +1557,7 @@ var _ = Describe("Client Session", func() {
 			sess.unpacker = &mockUnpacker{}
 		})
 
-		It("passes the diversification nonce to the cryptoSetup", func() {
+		It("passes the diversification nonce to the CryptoSetup", func() {
 			go sess.run()
 			hdr.PacketNumber = 5
 			hdr.DiversificationNonce = []byte("foobar")
@@ -1570,7 +1570,7 @@ var _ = Describe("Client Session", func() {
 
 	It("does not block if an error occurs", func(done Done) {
 		// this test basically tests that the handshakeChan has a capacity of 3
-		// The session needs to run (and close) properly, even if no one is receiving from the handshakeChan
+		// The QuicSession needs to run (and close) properly, even if no one is receiving from the handshakeChan
 		go sess.run()
 		aeadChanged <- protocol.EncryptionSecure
 		aeadChanged <- protocol.EncryptionForwardSecure

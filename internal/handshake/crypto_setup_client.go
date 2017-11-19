@@ -17,11 +17,11 @@ import (
 	"github.com/costinm/quicgo/qerr"
 )
 
-type cryptoSetupClient struct {
+type CryptoSetupClient struct {
 	mutex sync.RWMutex
 
 	hostname           string
-	connID             protocol.ConnectionID
+	ConnID             protocol.ConnectionID
 	version            protocol.VersionNumber
 	initialVersion     protocol.VersionNumber
 	negotiatedVersions []protocol.VersionNumber
@@ -36,7 +36,8 @@ type cryptoSetupClient struct {
 	proof            []byte
 	chloForSignature []byte
 	lastSentCHLO     []byte
-	certManager      crypto.CertManager
+	// CertManager holds the certificate received.
+	CertManager crypto.CertManager
 
 	divNonceChan         chan []byte
 	diversificationNonce []byte
@@ -57,7 +58,7 @@ type cryptoSetupClient struct {
 	params *TransportParameters
 }
 
-var _ CryptoSetup = &cryptoSetupClient{}
+var _ CryptoSetup = &CryptoSetupClient{}
 
 var (
 	errNoObitForClientNonce             = errors.New("CryptoSetup BUG: No OBIT for client nonce available")
@@ -82,12 +83,12 @@ func NewCryptoSetupClient(
 	if err != nil {
 		return nil, err
 	}
-	return &cryptoSetupClient{
+	return &CryptoSetupClient{
 		cryptoStream:       cryptoStream,
 		hostname:           hostname,
-		connID:             connID,
+		ConnID:             connID,
 		version:            version,
-		certManager:        crypto.NewCertManager(tlsConfig),
+		CertManager:        crypto.NewCertManager(tlsConfig),
 		params:             params,
 		keyDerivation:      crypto.DeriveQuicCryptoAESKeys,
 		keyExchange:        getEphermalKEX,
@@ -100,7 +101,7 @@ func NewCryptoSetupClient(
 	}, nil
 }
 
-func (h *cryptoSetupClient) HandleCryptoStream() error {
+func (h *CryptoSetupClient) HandleCryptoStream() error {
 	messageChan := make(chan HandshakeMessage)
 	errorChan := make(chan error)
 
@@ -167,7 +168,7 @@ func (h *cryptoSetupClient) HandleCryptoStream() error {
 	}
 }
 
-func (h *cryptoSetupClient) handleREJMessage(cryptoData map[Tag][]byte) error {
+func (h *CryptoSetupClient) handleREJMessage(cryptoData map[Tag][]byte) error {
 	var err error
 
 	if stk, ok := cryptoData[TagSTK]; ok {
@@ -204,20 +205,20 @@ func (h *cryptoSetupClient) handleREJMessage(cryptoData map[Tag][]byte) error {
 	}
 
 	if crt, ok := cryptoData[TagCERT]; ok {
-		err := h.certManager.SetData(crt)
+		err := h.CertManager.SetData(crt)
 		if err != nil {
 			return qerr.Error(qerr.InvalidCryptoMessageParameter, "Certificate data invalid")
 		}
 
-		err = h.certManager.Verify(h.hostname)
+		err = h.CertManager.Verify(h.hostname)
 		if err != nil {
 			utils.Infof("Certificate validation failed: %s", err.Error())
 			return qerr.ProofInvalid
 		}
 	}
 
-	if h.serverConfig != nil && len(h.proof) != 0 && h.certManager.GetLeafCert() != nil {
-		validProof := h.certManager.VerifyServerProof(h.proof, h.chloForSignature, h.serverConfig.Get())
+	if h.serverConfig != nil && len(h.proof) != 0 && h.CertManager.GetLeafCert() != nil {
+		validProof := h.CertManager.VerifyServerProof(h.proof, h.chloForSignature, h.serverConfig.Get())
 		if !validProof {
 			utils.Infof("Server proof verification failed")
 			return qerr.ProofInvalid
@@ -229,7 +230,7 @@ func (h *cryptoSetupClient) handleREJMessage(cryptoData map[Tag][]byte) error {
 	return nil
 }
 
-func (h *cryptoSetupClient) handleSHLOMessage(cryptoData map[Tag][]byte) (*TransportParameters, error) {
+func (h *CryptoSetupClient) handleSHLOMessage(cryptoData map[Tag][]byte) (*TransportParameters, error) {
 	h.mutex.Lock()
 	defer h.mutex.Unlock()
 
@@ -261,13 +262,13 @@ func (h *cryptoSetupClient) handleSHLOMessage(cryptoData map[Tag][]byte) (*Trans
 		return nil, err
 	}
 
-	leafCert := h.certManager.GetLeafCert()
+	leafCert := h.CertManager.GetLeafCert()
 
 	h.forwardSecureAEAD, err = h.keyDerivation(
 		true,
 		ephermalSharedSecret,
 		nonce,
-		h.connID,
+		h.ConnID,
 		h.lastSentCHLO,
 		h.serverConfig.Get(),
 		leafCert,
@@ -285,7 +286,7 @@ func (h *cryptoSetupClient) handleSHLOMessage(cryptoData map[Tag][]byte) (*Trans
 	return params, nil
 }
 
-func (h *cryptoSetupClient) validateVersionList(verTags []byte) bool {
+func (h *CryptoSetupClient) validateVersionList(verTags []byte) bool {
 	numNegotiatedVersions := len(h.negotiatedVersions)
 	if numNegotiatedVersions == 0 {
 		return true
@@ -307,7 +308,7 @@ func (h *cryptoSetupClient) validateVersionList(verTags []byte) bool {
 	return true
 }
 
-func (h *cryptoSetupClient) Open(dst, src []byte, packetNumber protocol.PacketNumber, associatedData []byte) ([]byte, protocol.EncryptionLevel, error) {
+func (h *CryptoSetupClient) Open(dst, src []byte, packetNumber protocol.PacketNumber, associatedData []byte) ([]byte, protocol.EncryptionLevel, error) {
 	h.mutex.RLock()
 	defer h.mutex.RUnlock()
 
@@ -336,7 +337,7 @@ func (h *cryptoSetupClient) Open(dst, src []byte, packetNumber protocol.PacketNu
 	return res, protocol.EncryptionUnencrypted, nil
 }
 
-func (h *cryptoSetupClient) GetSealer() (protocol.EncryptionLevel, Sealer) {
+func (h *CryptoSetupClient) GetSealer() (protocol.EncryptionLevel, Sealer) {
 	h.mutex.RLock()
 	defer h.mutex.RUnlock()
 	if h.forwardSecureAEAD != nil {
@@ -348,11 +349,11 @@ func (h *cryptoSetupClient) GetSealer() (protocol.EncryptionLevel, Sealer) {
 	}
 }
 
-func (h *cryptoSetupClient) GetSealerForCryptoStream() (protocol.EncryptionLevel, Sealer) {
+func (h *CryptoSetupClient) GetSealerForCryptoStream() (protocol.EncryptionLevel, Sealer) {
 	return protocol.EncryptionUnencrypted, h.nullAEAD
 }
 
-func (h *cryptoSetupClient) GetSealerWithEncryptionLevel(encLevel protocol.EncryptionLevel) (Sealer, error) {
+func (h *CryptoSetupClient) GetSealerWithEncryptionLevel(encLevel protocol.EncryptionLevel) (Sealer, error) {
 	h.mutex.RLock()
 	defer h.mutex.RUnlock()
 
@@ -373,19 +374,19 @@ func (h *cryptoSetupClient) GetSealerWithEncryptionLevel(encLevel protocol.Encry
 	return nil, errors.New("CryptoSetupClient: no encryption level specified")
 }
 
-func (h *cryptoSetupClient) DiversificationNonce() []byte {
-	panic("not needed for cryptoSetupClient")
+func (h *CryptoSetupClient) DiversificationNonce() []byte {
+	panic("not needed for CryptoSetupClient")
 }
 
-func (h *cryptoSetupClient) SetDiversificationNonce(data []byte) {
+func (h *CryptoSetupClient) SetDiversificationNonce(data []byte) {
 	h.divNonceChan <- data
 }
 
-func (h *cryptoSetupClient) GetNextPacketType() protocol.PacketType {
+func (h *CryptoSetupClient) GetNextPacketType() protocol.PacketType {
 	panic("not needed for cryptoSetupServer")
 }
 
-func (h *cryptoSetupClient) sendCHLO() error {
+func (h *CryptoSetupClient) sendCHLO() error {
 	h.clientHelloCounter++
 	if h.clientHelloCounter > protocol.MaxClientHellos {
 		return qerr.Error(qerr.CryptoTooManyRejects, fmt.Sprintf("More than %d rejects", protocol.MaxClientHellos))
@@ -415,12 +416,12 @@ func (h *cryptoSetupClient) sendCHLO() error {
 	return nil
 }
 
-func (h *cryptoSetupClient) getTags() (map[Tag][]byte, error) {
+func (h *CryptoSetupClient) getTags() (map[Tag][]byte, error) {
 	tags := h.params.getHelloMap()
 	tags[TagSNI] = []byte(h.hostname)
 	tags[TagPDMD] = []byte("X509")
 
-	ccs := h.certManager.GetCommonCertificateHashes()
+	ccs := h.CertManager.GetCommonCertificateHashes()
 	if len(ccs) > 0 {
 		tags[TagCCS] = ccs
 	}
@@ -439,9 +440,9 @@ func (h *cryptoSetupClient) getTags() (map[Tag][]byte, error) {
 	if h.serverConfig != nil {
 		tags[TagSCID] = h.serverConfig.ID
 
-		leafCert := h.certManager.GetLeafCert()
+		leafCert := h.CertManager.GetLeafCert()
 		if leafCert != nil {
-			certHash, _ := h.certManager.GetLeafCertHash()
+			certHash, _ := h.CertManager.GetLeafCertHash()
 			xlct := make([]byte, 8)
 			binary.LittleEndian.PutUint64(xlct, certHash)
 
@@ -457,7 +458,7 @@ func (h *cryptoSetupClient) getTags() (map[Tag][]byte, error) {
 }
 
 // add a TagPAD to a tagMap, such that the total size will be bigger than the ClientHelloMinimumSize
-func (h *cryptoSetupClient) addPadding(tags map[Tag][]byte) {
+func (h *CryptoSetupClient) addPadding(tags map[Tag][]byte) {
 	var size int
 	for _, tag := range tags {
 		size += 8 + len(tag) // 4 bytes for the tag + 4 bytes for the offset + the length of the data
@@ -468,7 +469,7 @@ func (h *cryptoSetupClient) addPadding(tags map[Tag][]byte) {
 	}
 }
 
-func (h *cryptoSetupClient) maybeUpgradeCrypto() error {
+func (h *CryptoSetupClient) maybeUpgradeCrypto() error {
 	if !h.serverVerified {
 		return nil
 	}
@@ -476,7 +477,7 @@ func (h *cryptoSetupClient) maybeUpgradeCrypto() error {
 	h.mutex.Lock()
 	defer h.mutex.Unlock()
 
-	leafCert := h.certManager.GetLeafCert()
+	leafCert := h.CertManager.GetLeafCert()
 	if h.secureAEAD == nil && (h.serverConfig != nil && len(h.serverConfig.sharedSecret) > 0 && len(h.nonc) > 0 && len(leafCert) > 0 && len(h.diversificationNonce) > 0 && len(h.lastSentCHLO) > 0) {
 		var err error
 		var nonce []byte
@@ -490,7 +491,7 @@ func (h *cryptoSetupClient) maybeUpgradeCrypto() error {
 			false,
 			h.serverConfig.sharedSecret,
 			nonce,
-			h.connID,
+			h.ConnID,
 			h.lastSentCHLO,
 			h.serverConfig.Get(),
 			leafCert,
@@ -507,7 +508,7 @@ func (h *cryptoSetupClient) maybeUpgradeCrypto() error {
 	return nil
 }
 
-func (h *cryptoSetupClient) generateClientNonce() error {
+func (h *CryptoSetupClient) generateClientNonce() error {
 	if len(h.nonc) > 0 {
 		return errClientNonceAlreadyExists
 	}

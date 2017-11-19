@@ -16,7 +16,7 @@ type CryptoSetup interface {
 	HandleCryptoStream() error
 	// TODO: clean up this interface
 	DiversificationNonce() []byte           // only needed for cryptoSetupServer
-	SetDiversificationNonce([]byte)         // only needed for cryptoSetupClient
+	SetDiversificationNonce([]byte)         // only needed for CryptoSetupClient
 	GetNextPacketType() protocol.PacketType // only needed for cryptoSetupServer
 
 	GetSealer() (protocol.EncryptionLevel, Sealer)

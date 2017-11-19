@@ -111,7 +111,7 @@ func decompressChain(data []byte) ([][]byte, error) {
 
 		switch et {
 		case entryCached:
-			// we're not sending any certificate hashes in the CHLO, so there shouldn't be any cached certificates in the chain
+			// we're not sending any certificate hashes in the CHLO, so there shouldn't be any cached certificates in the Chain
 			return nil, errors.New("unexpected cached certificate")
 		case entryCommon:
 			e := entry{t: entryCommon}
@@ -213,7 +213,7 @@ chainLoop:
 				// We don't have this set
 				continue
 			}
-			// We have this set, check if chain[i] is in the set
+			// We have this set, check if Chain[i] is in the set
 			pos := set.findCertInSet(chain[i])
 			if pos >= 0 {
 				// Found

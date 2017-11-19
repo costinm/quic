@@ -195,7 +195,7 @@ func (s *server) Close() error {
 		if session != nil {
 			wg.Add(1)
 			go func(sess packetHandler) {
-				// session.Close() blocks until the CONNECTION_CLOSE has been sent and the run-loop has stopped
+				// QuicSession.Close() blocks until the CONNECTION_CLOSE has been sent and the run-loop has stopped
 				_ = sess.Close(nil)
 				wg.Done()
 			}(session)
@@ -231,7 +231,7 @@ func (s *server) handlePacket(pconn net.PacketConn, remoteAddr net.Addr, packet 
 	s.sessionsMutex.RUnlock()
 
 	if sessionKnown && session == nil {
-		// Late packet for closed session
+		// Late packet for closed QuicSession
 		return nil
 	}
 
@@ -251,7 +251,7 @@ func (s *server) handlePacket(pconn net.PacketConn, remoteAddr net.Addr, packet 
 		return nil
 	}
 
-	// If we don't have a session for this connection, and this packet cannot open a new connection, send a Public Reset
+	// If we don't have a QuicSession for this connection, and this packet cannot open a new connection, send a Public Reset
 	// This should only happen after a server restart, when we still receive packets for connections that we lost the state for.
 	// TODO(#943): implement sending of IETF draft style stateless resets
 	if !sessionKnown && (!hdr.VersionFlag && hdr.Type != protocol.PacketTypeInitial) {
@@ -259,8 +259,8 @@ func (s *server) handlePacket(pconn net.PacketConn, remoteAddr net.Addr, packet 
 		return err
 	}
 
-	// a session is only created once the client sent a supported version
-	// if we receive a packet for a connection that already has session, it's probably an old packet that was sent by the client before the version was negotiated
+	// a QuicSession is only created once the client sent a supported version
+	// if we receive a packet for a connection that already has QuicSession, it's probably an old packet that was sent by the client before the version was negotiated
 	// it is safe to drop it
 	if sessionKnown && hdr.VersionFlag && !protocol.IsSupportedVersion(s.config.Versions, hdr.Version) {
 		return nil
@@ -308,7 +308,7 @@ func (s *server) handlePacket(pconn net.PacketConn, remoteAddr net.Addr, packet 
 		s.sessionsMutex.Unlock()
 
 		go func() {
-			// session.run() returns as soon as the session is closed
+			// QuicSession.run() returns as soon as the QuicSession is closed
 			_ = session.run()
 			s.removeConnection(connID)
 		}()

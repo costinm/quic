@@ -11,6 +11,7 @@ import (
 
 	quic "github.com/costinm/quicgo"
 
+	"github.com/costinm/quicgo/qerr"
 	"golang.org/x/net/lex/httplex"
 )
 
@@ -104,7 +105,11 @@ func (r *RoundTripper) RoundTripOpt(req *http.Request, opt RoundTripOpt) (*http.
 
 // RoundTrip does a round trip.
 func (r *RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	return r.RoundTripOpt(req, RoundTripOpt{})
+	res, err := r.RoundTripOpt(req, RoundTripOpt{})
+	if qErr, ok := err.(*qerr.QuicError); ok && qErr.ErrorCode == qerr.NetworkIdleTimeout {
+		res, err = r.RoundTripOpt(req, RoundTripOpt{})
+	}
+	return res, err
 }
 
 func (r *RoundTripper) getClient(hostname string, onlyCached bool) (http.RoundTripper, error) {

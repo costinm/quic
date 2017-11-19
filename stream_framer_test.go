@@ -21,7 +21,7 @@ var _ = Describe("Stream Framer", func() {
 	var (
 		retransmittedFrame1, retransmittedFrame2 *wire.StreamFrame
 		framer                                   *streamFramer
-		streamsMap                               *streamsMap
+		streamsMap                               *StreamsMap
 		stream1, stream2                         *mocks.MockStreamI
 		connFC                                   *mocks.MockConnectionFlowController
 	)

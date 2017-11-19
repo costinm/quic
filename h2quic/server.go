@@ -131,7 +131,7 @@ func (s *Server) handleHeaderStream(session streamCreator) {
 		for {
 			if err := s.handleRequest(session, stream, &headerStreamMutex, hpackDecoder, h2framer); err != nil {
 				// QuicErrors must originate from stream.Read() returning an error.
-				// In this case, the session has already logged the error, so we don't
+				// In this case, the Session has already logged the error, so we don't
 				// need to log it again.
 				if _, ok := err.(*qerr.QuicError); !ok {
 					utils.Errorf("error handling h2 request: %s", err.Error())
@@ -178,7 +178,7 @@ func (s *Server) handleRequest(session streamCreator, headerStream quic.Stream, 
 	if err != nil {
 		return err
 	}
-	// this can happen if the client immediately closes the data stream after sending the request and the runtime processes the reset before the request
+	// this can happen if the Client immediately closes the data stream after sending the request and the runtime processes the reset before the request
 	if dataStream == nil {
 		return nil
 	}

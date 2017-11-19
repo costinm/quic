@@ -19,13 +19,13 @@ import (
 )
 
 var _ = Describe("Cert Manager", func() {
-	var cm *certManager
+	var cm *QuicCertManager
 	var key1, key2 *rsa.PrivateKey
 	var cert1, cert2 []byte
 
 	BeforeEach(func() {
 		var err error
-		cm = NewCertManager(nil).(*certManager)
+		cm = NewCertManager(nil).(*QuicCertManager)
 		key1, err = rsa.GenerateKey(rand.Reader, 768)
 		Expect(err).ToNot(HaveOccurred())
 		key2, err = rsa.GenerateKey(rand.Reader, 768)
@@ -39,7 +39,7 @@ var _ = Describe("Cert Manager", func() {
 
 	It("saves a client TLS config", func() {
 		tlsConf := &tls.Config{ServerName: "quic.clemente.io"}
-		cm = NewCertManager(tlsConf).(*certManager)
+		cm = NewCertManager(tlsConf).(*QuicCertManager)
 		Expect(cm.config.ServerName).To(Equal("quic.clemente.io"))
 	})
 
@@ -54,17 +54,17 @@ var _ = Describe("Cert Manager", func() {
 	})
 
 	Context("setting the data", func() {
-		It("decompresses a certificate chain", func() {
+		It("decompresses a certificate Chain", func() {
 			chain := [][]byte{cert1, cert2}
 			compressed, err := compressChain(chain, nil, nil)
 			Expect(err).ToNot(HaveOccurred())
 			err = cm.SetData(compressed)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(cm.chain[0].Raw).To(Equal(cert1))
-			Expect(cm.chain[1].Raw).To(Equal(cert2))
+			Expect(cm.Chain[0].Raw).To(Equal(cert1))
+			Expect(cm.Chain[1].Raw).To(Equal(cert2))
 		})
 
-		It("errors if it can't decompress the chain", func() {
+		It("errors if it can't decompress the Chain", func() {
 			err := cm.SetData([]byte("invalid data"))
 			Expect(err).To(MatchError(qerr.Error(qerr.InvalidCryptoMessageParameter, "Certificate data invalid")))
 		})
@@ -85,12 +85,12 @@ var _ = Describe("Cert Manager", func() {
 			Expect(err).ToNot(HaveOccurred())
 			xcert2, err := x509.ParseCertificate(cert2)
 			Expect(err).ToNot(HaveOccurred())
-			cm.chain = []*x509.Certificate{xcert1, xcert2}
+			cm.Chain = []*x509.Certificate{xcert1, xcert2}
 			leafCert := cm.GetLeafCert()
 			Expect(leafCert).To(Equal(cert1))
 		})
 
-		It("returns nil if the chain hasn't been set yet", func() {
+		It("returns nil if the Chain hasn't been set yet", func() {
 			leafCert := cm.GetLeafCert()
 			Expect(leafCert).To(BeNil())
 		})
@@ -98,8 +98,8 @@ var _ = Describe("Cert Manager", func() {
 
 	Context("getting the leaf cert hash", func() {
 		It("calculates the FVN1a 64 hash", func() {
-			cm.chain = make([]*x509.Certificate, 1)
-			cm.chain[0] = &x509.Certificate{
+			cm.Chain = make([]*x509.Certificate, 1)
+			cm.Chain[0] = &x509.Certificate{
 				Raw: []byte("test fnv hash"),
 			}
 			hash, err := cm.GetLeafCertHash()
@@ -108,14 +108,14 @@ var _ = Describe("Cert Manager", func() {
 			Expect(hash).To(Equal(uint64(0x4770f6141fa0f5ad)))
 		})
 
-		It("errors if the certificate chain is not loaded", func() {
+		It("errors if the certificate Chain is not loaded", func() {
 			_, err := cm.GetLeafCertHash()
 			Expect(err).To(MatchError(errNoCertificateChain))
 		})
 	})
 
 	Context("verifying the server config signature", func() {
-		It("returns false when the chain hasn't been set yet", func() {
+		It("returns false when the Chain hasn't been set yet", func() {
 			valid := cm.VerifyServerProof([]byte("proof"), []byte("chlo"), []byte("scfg"))
 			Expect(valid).To(BeFalse())
 		})
@@ -125,7 +125,7 @@ var _ = Describe("Cert Manager", func() {
 			scfg := []byte("server config data")
 			xcert1, err := x509.ParseCertificate(cert1)
 			Expect(err).ToNot(HaveOccurred())
-			cm.chain = []*x509.Certificate{xcert1}
+			cm.Chain = []*x509.Certificate{xcert1}
 			proof, err := signServerProof(&tls.Certificate{PrivateKey: key1}, chlo, scfg)
 			Expect(err).ToNot(HaveOccurred())
 			valid := cm.VerifyServerProof(proof, chlo, scfg)
@@ -135,13 +135,13 @@ var _ = Describe("Cert Manager", func() {
 		It("rejects an invalid signature", func() {
 			xcert1, err := x509.ParseCertificate(cert1)
 			Expect(err).ToNot(HaveOccurred())
-			cm.chain = []*x509.Certificate{xcert1}
+			cm.Chain = []*x509.Certificate{xcert1}
 			valid := cm.VerifyServerProof([]byte("invalid proof"), []byte("chlo"), []byte("scfg"))
 			Expect(valid).To(BeFalse())
 		})
 	})
 
-	Context("verifying the certificate chain", func() {
+	Context("verifying the certificate Chain", func() {
 		generateCertificate := func(template, parent *x509.Certificate, pubKey *rsa.PublicKey, privKey *rsa.PrivateKey) *x509.Certificate {
 			certDER, err := x509.CreateCertificate(rand.Reader, template, parent, pubKey, privKey)
 			Expect(err).ToNot(HaveOccurred())
@@ -164,7 +164,7 @@ var _ = Describe("Cert Manager", func() {
 				var cert *x509.Certificate
 				cert, err = x509.ParseCertificate(data)
 				Expect(err).ToNot(HaveOccurred())
-				cm.chain = append(cm.chain, cert)
+				cm.Chain = append(cm.Chain, cert)
 			}
 			err = cm.Verify("quic.clemente.io")
 			Expect(err).ToNot(HaveOccurred())
@@ -183,7 +183,7 @@ var _ = Describe("Cert Manager", func() {
 			}
 			_, leafCert := getCertificate(template)
 
-			cm.chain = []*x509.Certificate{leafCert}
+			cm.Chain = []*x509.Certificate{leafCert}
 			err := cm.Verify("")
 			Expect(err).To(HaveOccurred())
 			Expect(err.(x509.CertificateInvalidError).Reason).To(Equal(x509.Expired))
@@ -202,7 +202,7 @@ var _ = Describe("Cert Manager", func() {
 			}
 			_, leafCert := getCertificate(template)
 
-			cm.chain = []*x509.Certificate{leafCert}
+			cm.Chain = []*x509.Certificate{leafCert}
 			err := cm.Verify("")
 			Expect(err).To(HaveOccurred())
 			Expect(err.(x509.CertificateInvalidError).Reason).To(Equal(x509.Expired))
@@ -222,20 +222,20 @@ var _ = Describe("Cert Manager", func() {
 			}
 			_, leafCert := getCertificate(template)
 
-			cm.chain = []*x509.Certificate{leafCert}
+			cm.Chain = []*x509.Certificate{leafCert}
 			err := cm.Verify("quic.clemente.io")
 			Expect(err).To(HaveOccurred())
 			_, ok := err.(x509.HostnameError)
 			Expect(ok).To(BeTrue())
 		})
 
-		It("errors if the chain hasn't been set yet", func() {
+		It("errors if the Chain hasn't been set yet", func() {
 			err := cm.Verify("example.com")
 			Expect(err).To(HaveOccurred())
 		})
 
 		// this tests relies on LetsEncrypt not being contained in the Root CAs
-		It("rejects valid certificate with missing certificate chain", func() {
+		It("rejects valid certificate with missing certificate Chain", func() {
 			if runtime.GOOS == "windows" {
 				Skip("LetsEncrypt Root CA is included in Windows")
 			}
@@ -243,7 +243,7 @@ var _ = Describe("Cert Manager", func() {
 			cert := testdata.GetCertificate()
 			xcert, err := x509.ParseCertificate(cert.Certificate[0])
 			Expect(err).ToNot(HaveOccurred())
-			cm.chain = []*x509.Certificate{xcert}
+			cm.Chain = []*x509.Certificate{xcert}
 			err = cm.Verify("quic.clemente.io")
 			_, ok := err.(x509.UnknownAuthorityError)
 			Expect(ok).To(BeTrue())
@@ -263,7 +263,7 @@ var _ = Describe("Cert Manager", func() {
 			cm.config = &tls.Config{
 				InsecureSkipVerify: true,
 			}
-			cm.chain = []*x509.Certificate{leafCert}
+			cm.Chain = []*x509.Certificate{leafCert}
 			err := cm.Verify("quic.clemente.io")
 			Expect(err).ToNot(HaveOccurred())
 		})
@@ -281,7 +281,7 @@ var _ = Describe("Cert Manager", func() {
 				Subject:      pkix.Name{CommonName: "quic.clemente.io"},
 			}
 			_, leafCert := getCertificate(template)
-			cm.chain = []*x509.Certificate{leafCert}
+			cm.Chain = []*x509.Certificate{leafCert}
 			cm.config = &tls.Config{
 				Time: func() time.Time { return time.Now().Add(-24 * time.Hour) },
 			}
@@ -302,7 +302,7 @@ var _ = Describe("Cert Manager", func() {
 				NotAfter:     time.Now().Add(time.Hour),
 			}
 			_, leafCert := getCertificate(template)
-			cm.chain = []*x509.Certificate{leafCert}
+			cm.Chain = []*x509.Certificate{leafCert}
 			cm.config = &tls.Config{
 				Time: func() time.Time { return time.Now().Add(-24 * time.Hour) },
 			}
@@ -337,7 +337,7 @@ var _ = Describe("Cert Manager", func() {
 			rootCAPool := x509.NewCertPool()
 			rootCAPool.AddCert(rootCert)
 
-			cm.chain = []*x509.Certificate{leafCert}
+			cm.Chain = []*x509.Certificate{leafCert}
 			cm.config = &tls.Config{
 				RootCAs: rootCAPool,
 			}

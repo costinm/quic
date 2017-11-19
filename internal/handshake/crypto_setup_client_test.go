@@ -74,7 +74,7 @@ func (m *mockCertManager) Verify(hostname string) error {
 
 var _ = Describe("Client Crypto Setup", func() {
 	var (
-		cs                      *cryptoSetupClient
+		cs                      *CryptoSetupClient
 		certManager             *mockCertManager
 		stream                  *mockStream
 		keyDerivationCalledWith *keyDerivationValues
@@ -122,8 +122,8 @@ var _ = Describe("Client Crypto Setup", func() {
 			nil,
 		)
 		Expect(err).ToNot(HaveOccurred())
-		cs = csInt.(*cryptoSetupClient)
-		cs.certManager = certManager
+		cs = csInt.(*CryptoSetupClient)
+		cs.CertManager = certManager
 		cs.keyDerivation = keyDerivation
 		cs.keyExchange = func() crypto.KeyExchange { return &mockKEX{ephermal: true} }
 		cs.nullAEAD = mockcrypto.NewMockAEAD(mockCtrl)
@@ -631,7 +631,7 @@ var _ = Describe("Client Crypto Setup", func() {
 			Expect(keyDerivationCalledWith.forwardSecure).To(BeFalse())
 			Expect(keyDerivationCalledWith.sharedSecret).To(Equal(cs.serverConfig.sharedSecret))
 			Expect(keyDerivationCalledWith.nonces).To(Equal(cs.nonc))
-			Expect(keyDerivationCalledWith.connID).To(Equal(cs.connID))
+			Expect(keyDerivationCalledWith.connID).To(Equal(cs.ConnID))
 			Expect(keyDerivationCalledWith.chlo).To(Equal(cs.lastSentCHLO))
 			Expect(keyDerivationCalledWith.scfg).To(Equal(cs.serverConfig.Get()))
 			Expect(keyDerivationCalledWith.cert).To(Equal(certManager.leafCert))

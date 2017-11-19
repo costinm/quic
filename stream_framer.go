@@ -7,7 +7,7 @@ import (
 )
 
 type streamFramer struct {
-	streamsMap   *streamsMap
+	streamsMap   *StreamsMap
 	cryptoStream streamI
 
 	connFlowController flowcontrol.ConnectionFlowController
@@ -18,7 +18,7 @@ type streamFramer struct {
 
 func newStreamFramer(
 	cryptoStream streamI,
-	streamsMap *streamsMap,
+	streamsMap *StreamsMap,
 	cfc flowcontrol.ConnectionFlowController,
 ) *streamFramer {
 	return &streamFramer{

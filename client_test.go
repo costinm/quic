@@ -67,7 +67,7 @@ var _ = Describe("Client", func() {
 	})
 
 	AfterEach(func() {
-		if s, ok := cl.session.(*session); ok {
+		if s, ok := cl.session.(*QuicSession); ok {
 			s.Close(nil)
 		}
 		Eventually(areSessionsRunning).Should(BeFalse())
@@ -283,8 +283,8 @@ var _ = Describe("Client", func() {
 			close(done)
 		})
 
-		It("errors if it can't create a session", func() {
-			testErr := errors.New("error creating session")
+		It("errors if it can't create a QuicSession", func() {
+			testErr := errors.New("error creating QuicSession")
 			newClientSession = func(
 				_ connection,
 				_ string,
@@ -363,7 +363,7 @@ var _ = Describe("Client", func() {
 				var firstSession, secondSession *mockSession
 				Eventually(sessionChan).Should(Receive(&firstSession))
 				Eventually(sessionChan).Should(Receive(&secondSession))
-				// it didn't pass the version negoation packet to the old session (since it has no payload)
+				// it didn't pass the version negoation packet to the old QuicSession (since it has no payload)
 				Expect(firstSession.packetCount).To(BeZero())
 				Eventually(func() bool { return firstSession.closed }).Should(BeTrue())
 				Expect(firstSession.closeReason).To(Equal(errCloseSessionForNewVersion))
@@ -537,7 +537,7 @@ var _ = Describe("Client", func() {
 			Consistently(stoppedListening).ShouldNot(BeClosed())
 		})
 
-		It("closes the session when encountering an error while reading from the connection", func() {
+		It("closes the QuicSession when encountering an error while reading from the connection", func() {
 			testErr := errors.New("test error")
 			packetConn.readErr = testErr
 			cl.listen()
@@ -547,7 +547,7 @@ var _ = Describe("Client", func() {
 	})
 
 	Context("Public Reset handling", func() {
-		It("closes the session when receiving a Public Reset", func() {
+		It("closes the QuicSession when receiving a Public Reset", func() {
 			cl.handlePacket(addr, wire.WritePublicReset(cl.connectionID, 1, 0))
 			Expect(cl.session.(*mockSession).closed).To(BeTrue())
 			Expect(cl.session.(*mockSession).closedRemote).To(BeTrue())

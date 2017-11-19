@@ -15,7 +15,7 @@ import (
 
 var _ = Describe("Streams Map", func() {
 	var (
-		m               *streamsMap
+		m               *StreamsMap
 		finishedStreams map[protocol.StreamID]*gomock.Call
 	)
 
@@ -152,7 +152,7 @@ var _ = Describe("Streams Map", func() {
 					Expect(m.numOutgoingStreams).To(BeEquivalentTo(1))
 				})
 
-				It("returns the error when the streamsMap was closed", func() {
+				It("returns the error when the StreamsMap was closed", func() {
 					testErr := errors.New("test error")
 					m.CloseWithError(testErr)
 					_, err := m.OpenStream()

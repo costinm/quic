@@ -390,7 +390,7 @@ func (s *stream) CloseRemote(offset protocol.ByteCount) {
 	s.AddStreamFrame(&wire.StreamFrame{FinBit: true, Offset: offset})
 }
 
-// Cancel is called by session to indicate that an error occurred
+// Cancel is called by QuicSession to indicate that an error occurred
 // The stream should will be closed immediately
 func (s *stream) Cancel(err error) {
 	s.mutex.Lock()

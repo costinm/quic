@@ -10,7 +10,7 @@ import (
 	"github.com/costinm/quicgo/qerr"
 )
 
-type streamsMap struct {
+type StreamsMap struct {
 	mutex sync.RWMutex
 
 	perspective protocol.Perspective
@@ -39,16 +39,16 @@ type streamsMap struct {
 type streamLambda func(streamI) (bool, error)
 type newStreamLambda func(protocol.StreamID) streamI
 
-var errMapAccess = errors.New("streamsMap: Error accessing the streams map")
+var errMapAccess = errors.New("StreamsMap: Error accessing the streams map")
 
-func newStreamsMap(newStream newStreamLambda, pers protocol.Perspective, ver protocol.VersionNumber) *streamsMap {
+func newStreamsMap(newStream newStreamLambda, pers protocol.Perspective, ver protocol.VersionNumber) *StreamsMap {
 	// add some tolerance to the maximum incoming streams value
 	maxStreams := uint32(protocol.MaxIncomingStreams)
 	maxIncomingStreams := utils.MaxUint32(
 		maxStreams+protocol.MaxStreamsMinimumIncrement,
 		uint32(float64(maxStreams)*float64(protocol.MaxStreamsMultiplier)),
 	)
-	sm := streamsMap{
+	sm := StreamsMap{
 		perspective:        pers,
 		streams:            make(map[protocol.StreamID]streamI),
 		openStreams:        make([]protocol.StreamID, 0),
@@ -75,7 +75,7 @@ func newStreamsMap(newStream newStreamLambda, pers protocol.Perspective, ver pro
 
 // GetOrOpenStream either returns an existing stream, a newly opened stream, or nil if a stream with the provided ID is already closed.
 // Newly opened streams should only originate from the client. To open a stream from the server, OpenStream should be used.
-func (m *streamsMap) GetOrOpenStream(id protocol.StreamID) (streamI, error) {
+func (m *StreamsMap) GetOrOpenStream(id protocol.StreamID) (streamI, error) {
 	m.mutex.RLock()
 	s, ok := m.streams[id]
 	m.mutex.RUnlock()
@@ -133,7 +133,7 @@ func (m *streamsMap) GetOrOpenStream(id protocol.StreamID) (streamI, error) {
 	return m.streams[id], nil
 }
 
-func (m *streamsMap) openRemoteStream(id protocol.StreamID) (streamI, error) {
+func (m *StreamsMap) openRemoteStream(id protocol.StreamID) (streamI, error) {
 	if m.numIncomingStreams >= m.maxIncomingStreams {
 		return nil, qerr.TooManyOpenStreams
 	}
@@ -156,7 +156,7 @@ func (m *streamsMap) openRemoteStream(id protocol.StreamID) (streamI, error) {
 	return s, nil
 }
 
-func (m *streamsMap) openStreamImpl() (streamI, error) {
+func (m *StreamsMap) openStreamImpl() (streamI, error) {
 	id := m.nextStream
 	if m.numOutgoingStreams >= m.maxOutgoingStreams {
 		return nil, qerr.TooManyOpenStreams
@@ -175,7 +175,7 @@ func (m *streamsMap) openStreamImpl() (streamI, error) {
 }
 
 // OpenStream opens the next available stream
-func (m *streamsMap) OpenStream() (streamI, error) {
+func (m *StreamsMap) OpenStream() (streamI, error) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -185,7 +185,7 @@ func (m *streamsMap) OpenStream() (streamI, error) {
 	return m.openStreamImpl()
 }
 
-func (m *streamsMap) OpenStreamSync() (streamI, error) {
+func (m *StreamsMap) OpenStreamSync() (streamI, error) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -206,7 +206,7 @@ func (m *streamsMap) OpenStreamSync() (streamI, error) {
 
 // AcceptStream returns the next stream opened by the peer
 // it blocks until a new stream is opened
-func (m *streamsMap) AcceptStream() (streamI, error) {
+func (m *StreamsMap) AcceptStream() (streamI, error) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 	var str streamI
@@ -225,7 +225,7 @@ func (m *streamsMap) AcceptStream() (streamI, error) {
 	return str, nil
 }
 
-func (m *streamsMap) DeleteClosedStreams() error {
+func (m *StreamsMap) DeleteClosedStreams() error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -274,7 +274,7 @@ func (m *streamsMap) DeleteClosedStreams() error {
 // RoundRobinIterate executes the streamLambda for every open stream, until the streamLambda returns false
 // It uses a round-robin-like scheduling to ensure that every stream is considered fairly
 // It prioritizes the the header-stream (StreamID 3)
-func (m *streamsMap) RoundRobinIterate(fn streamLambda) error {
+func (m *StreamsMap) RoundRobinIterate(fn streamLambda) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -296,7 +296,7 @@ func (m *streamsMap) RoundRobinIterate(fn streamLambda) error {
 }
 
 // Range executes a callback for all streams, in pseudo-random order
-func (m *streamsMap) Range(cb func(s streamI)) {
+func (m *StreamsMap) Range(cb func(s streamI)) {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
@@ -307,7 +307,7 @@ func (m *streamsMap) Range(cb func(s streamI)) {
 	}
 }
 
-func (m *streamsMap) iterateFunc(streamID protocol.StreamID, fn streamLambda) (bool, error) {
+func (m *StreamsMap) iterateFunc(streamID protocol.StreamID, fn streamLambda) (bool, error) {
 	str, ok := m.streams[streamID]
 	if !ok {
 		return true, errMapAccess
@@ -315,7 +315,7 @@ func (m *streamsMap) iterateFunc(streamID protocol.StreamID, fn streamLambda) (b
 	return fn(str)
 }
 
-func (m *streamsMap) putStream(s streamI) error {
+func (m *StreamsMap) putStream(s streamI) error {
 	id := s.StreamID()
 	if _, ok := m.streams[id]; ok {
 		return fmt.Errorf("a stream with ID %d already exists", id)
@@ -326,7 +326,7 @@ func (m *streamsMap) putStream(s streamI) error {
 	return nil
 }
 
-func (m *streamsMap) CloseWithError(err error) {
+func (m *StreamsMap) CloseWithError(err error) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 	m.closeErr = err
@@ -337,7 +337,7 @@ func (m *streamsMap) CloseWithError(err error) {
 	}
 }
 
-func (m *streamsMap) UpdateMaxStreamLimit(limit uint32) {
+func (m *StreamsMap) UpdateMaxStreamLimit(limit uint32) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 	m.maxOutgoingStreams = limit

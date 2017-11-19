@@ -24,7 +24,7 @@ import (
 
 var _ = Describe("Client", func() {
 	var (
-		client       *client
+		client       *Client
 		session      *mockSession
 		headerStream *mockStream
 		req          *http.Request
@@ -38,7 +38,7 @@ var _ = Describe("Client", func() {
 		Expect(client.hostname).To(Equal(hostname))
 		session = &mockSession{}
 		session.ctx, session.ctxCancel = context.WithCancel(context.Background())
-		client.session = session
+		client.Session = session
 
 		headerStream = newMockStream(3)
 		client.headerStream = headerStream
@@ -83,7 +83,7 @@ var _ = Describe("Client", func() {
 		}
 		close(headerStream.unblockRead)
 		go client.RoundTrip(req)
-		Eventually(func() quic.Session { return client.session }).Should(Equal(session))
+		Eventually(func() quic.Session { return client.Session }).Should(Equal(session))
 		close(done)
 	}, 2)
 
@@ -203,7 +203,7 @@ var _ = Describe("Client", func() {
 
 			Eventually(func() bool { return doReturned }).Should(BeTrue())
 			Expect(client.headerErr).To(MatchError(qerr.Error(qerr.HeadersStreamDataDecompressFailure, "cannot read frame")))
-			Expect(client.session.(*mockSession).closedWithError).To(MatchError(client.headerErr))
+			Expect(client.Session.(*mockSession).closedWithError).To(MatchError(client.headerErr))
 			close(done)
 		}, 2)
 

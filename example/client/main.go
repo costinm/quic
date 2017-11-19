@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"sync"
 
+	"crypto/tls"
 	"github.com/lucas-clemente/quic-go/h2quic"
 	"github.com/lucas-clemente/quic-go/internal/utils"
 )
@@ -24,7 +25,7 @@ func main() {
 	utils.SetLogTimeFormat("")
 
 	hclient := &http.Client{
-		Transport: &h2quic.RoundTripper{},
+		Transport: &h2quic.RoundTripper{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
 	}
 
 	var wg sync.WaitGroup

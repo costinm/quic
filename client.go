@@ -366,3 +366,13 @@ func (c *client) createNewSession(initialVersion protocol.VersionNumber, negotia
 	)
 	return err
 }
+
+// QuicDebug enables verbose logging. The 'internal' package can't be used
+// by apps importing quic.
+func QuicDebug(verbose bool) {
+	if verbose {
+		utils.SetLogLevel(utils.LogLevelDebug)
+	} else {
+		utils.SetLogLevel(utils.LogLevelError)
+	}
+}

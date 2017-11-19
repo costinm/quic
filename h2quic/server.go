@@ -318,6 +318,14 @@ func ListenAndServe(addr, certFile, keyFile string, handler http.Handler) error 
 	config := &tls.Config{
 		Certificates: certs,
 	}
+	return ListenAndServeTlsConfig(addr, config, handler)
+}
+
+// ListenAndServeTlsConfig listens on the given network address for both, TLS and QUIC
+// connetions in parallel. It returns if one of the two returns an error.
+// http.DefaultServeMux is used when handler is nil.
+// The correct Alt-Svc headers for QUIC are set.
+func ListenAndServeTlsConfig(addr string, config *tls.Config, handler http.Handler) error {
 
 	// Open the listeners
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)

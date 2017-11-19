@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net"
 
-	quic "github.com/lucas-clemente/quic-go"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
+	quic "github.com/costinm/quicgo"
+	"github.com/costinm/quicgo/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/testdata"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

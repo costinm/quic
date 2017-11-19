@@ -1,4 +1,4 @@
-package quic
+package quicgo
 
 import (
 	"context"
@@ -9,14 +9,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lucas-clemente/quic-go/ackhandler"
-	"github.com/lucas-clemente/quic-go/congestion"
-	"github.com/lucas-clemente/quic-go/internal/flowcontrol"
-	"github.com/lucas-clemente/quic-go/internal/handshake"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/internal/wire"
-	"github.com/lucas-clemente/quic-go/qerr"
+	"github.com/costinm/quicgo/ackhandler"
+	"github.com/costinm/quicgo/congestion"
+	"github.com/costinm/quicgo/internal/flowcontrol"
+	"github.com/costinm/quicgo/internal/handshake"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/utils"
+	"github.com/costinm/quicgo/internal/wire"
+	"github.com/costinm/quicgo/qerr"
 )
 
 type unpacker interface {

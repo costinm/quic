@@ -1,14 +1,14 @@
-package quic
+package quicgo
 
 import (
 	"bytes"
 	"math"
 
-	"github.com/lucas-clemente/quic-go/ackhandler"
-	"github.com/lucas-clemente/quic-go/internal/flowcontrol"
-	"github.com/lucas-clemente/quic-go/internal/handshake"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/costinm/quicgo/ackhandler"
+	"github.com/costinm/quicgo/internal/flowcontrol"
+	"github.com/costinm/quicgo/internal/handshake"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/wire"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

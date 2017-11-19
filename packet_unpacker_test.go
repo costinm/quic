@@ -1,12 +1,12 @@
-package quic
+package quicgo
 
 import (
 	"bytes"
 
-	"github.com/lucas-clemente/quic-go/internal/crypto"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/wire"
-	"github.com/lucas-clemente/quic-go/qerr"
+	"github.com/costinm/quicgo/internal/crypto"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/wire"
+	"github.com/costinm/quicgo/qerr"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

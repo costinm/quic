@@ -1,14 +1,14 @@
-package quic
+package quicgo
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
 
-	"github.com/lucas-clemente/quic-go/ackhandler"
-	"github.com/lucas-clemente/quic-go/internal/handshake"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/costinm/quicgo/ackhandler"
+	"github.com/costinm/quicgo/internal/handshake"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/wire"
 )
 
 type packedPacket struct {

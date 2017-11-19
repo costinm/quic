@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"hash/fnv"
 
+	"github.com/costinm/quicgo/internal/protocol"
 	"github.com/hashicorp/golang-lru"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
 )
 
 var (

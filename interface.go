@@ -1,4 +1,4 @@
-package quic
+package quicgo
 
 import (
 	"context"
@@ -6,8 +6,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/lucas-clemente/quic-go/internal/handshake"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
+	"github.com/costinm/quicgo/internal/handshake"
+	"github.com/costinm/quicgo/internal/protocol"
 )
 
 // The StreamID is the ID of a QUIC stream.

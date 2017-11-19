@@ -1,8 +1,8 @@
-package quic
+package quicgo
 
 import (
+	"github.com/costinm/quicgo/internal/protocol"
 	"github.com/golang/mock/gomock"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 

@@ -6,8 +6,8 @@ package mocks
 import (
 	reflect "reflect"
 
+	"github.com/costinm/quicgo/internal/protocol"
 	gomock "github.com/golang/mock/gomock"
-	protocol "github.com/lucas-clemente/quic-go/internal/protocol"
 )
 
 // MockConnectionFlowController is a mock of ConnectionFlowController interface

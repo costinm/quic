@@ -17,8 +17,8 @@ import (
 
 	_ "net/http/pprof"
 
-	"github.com/lucas-clemente/quic-go/h2quic"
-	"github.com/lucas-clemente/quic-go/internal/utils"
+	"github.com/costinm/quicgo/h2quic"
+	"github.com/costinm/quicgo/internal/utils"
 )
 
 type binds []string

@@ -6,10 +6,10 @@ import (
 	"fmt"
 
 	"github.com/bifurcation/mint"
-	"github.com/lucas-clemente/quic-go/internal/crypto"
-	"github.com/lucas-clemente/quic-go/internal/mocks/crypto"
-	"github.com/lucas-clemente/quic-go/internal/mocks/handshake"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
+	"github.com/costinm/quicgo/internal/crypto"
+	"github.com/costinm/quicgo/internal/mocks/crypto"
+	"github.com/costinm/quicgo/internal/mocks/handshake"
+	"github.com/costinm/quicgo/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/testdata"
 
 	. "github.com/onsi/ginkgo"

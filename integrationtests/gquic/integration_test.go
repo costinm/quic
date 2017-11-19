@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"sync"
 
-	"github.com/lucas-clemente/quic-go/integrationtests/tools/testserver"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
+	"github.com/costinm/quicgo/integrationtests/tools/testserver"
+	"github.com/costinm/quicgo/internal/protocol"
 
 	_ "github.com/lucas-clemente/quic-clients" // download clients
 

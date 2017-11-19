@@ -1,9 +1,9 @@
-package quic
+package quicgo
 
 import (
 	"sync"
 
-	"github.com/lucas-clemente/quic-go/internal/protocol"
+	"github.com/costinm/quicgo/internal/protocol"
 )
 
 var bufferPool sync.Pool

@@ -32,6 +32,11 @@ type roundTripperOpts struct {
 
 var dialAddr = quic.DialAddr
 
+// SetQuicDialer overrides the dialer used for connecting to quic servers
+func SetQuicDialer(qd func(addr string, tlsConf *tls.Config, config *quic.Config) (quic.Session, error)) {
+	dialAddr = qd
+}
+
 // Client is a HTTP2 Client doing QUIC requests
 type Client struct {
 	mutex sync.RWMutex
@@ -216,13 +221,13 @@ func (c *Client) RoundTrip(req *http.Request) (*http.Response, error) {
 	var res *http.Response
 
 	var receivedResponse bool
-	var bodySent bool
+	//var bodySent bool
+	//
+	//if !hasBody {
+	//	bodySent = true
+	//}
 
-	if !hasBody {
-		bodySent = true
-	}
-
-	for !(bodySent && receivedResponse) {
+	for !( /*costin: bidirectional streaming. bodySent && */ receivedResponse) {
 		select {
 		case res = <-responseChan:
 			receivedResponse = true
@@ -230,7 +235,7 @@ func (c *Client) RoundTrip(req *http.Request) (*http.Response, error) {
 			delete(c.responses, dataStream.StreamID())
 			c.mutex.Unlock()
 		case err := <-resc:
-			bodySent = true
+			//			bodySent = true
 			if err != nil {
 				return nil, err
 			}

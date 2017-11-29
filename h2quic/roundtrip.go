@@ -13,6 +13,7 @@ import (
 
 	"github.com/costinm/quicgo/qerr"
 	"golang.org/x/net/lex/httplex"
+	"log"
 )
 
 type roundTripCloser interface {
@@ -106,7 +107,23 @@ func (r *RoundTripper) RoundTripOpt(req *http.Request, opt RoundTripOpt) (*http.
 // RoundTrip does a round trip.
 func (r *RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	res, err := r.RoundTripOpt(req, RoundTripOpt{})
-	if qErr, ok := err.(*qerr.QuicError); ok && qErr.ErrorCode == qerr.NetworkIdleTimeout {
+	if qErr, ok := err.(*qerr.QuicError); ok &&
+		(qErr.ErrorCode == qerr.NetworkIdleTimeout ||
+			qErr.ErrorCode == qerr.PublicReset) {
+		log.Println("QUIC: Intercept transient network !!!!", qErr.ErrorCode)
+
+		r.mutex.Lock()
+		if r.clients == nil {
+			r.clients = make(map[string]roundTripCloser)
+		}
+		hostname := authorityAddr("https", hostnameFromRequest(req))
+		client, ok := r.clients[hostname]
+		if ok {
+			client.Close()
+			delete(r.clients, hostname)
+		}
+		r.mutex.Unlock()
+
 		res, err = r.RoundTripOpt(req, RoundTripOpt{})
 	}
 	return res, err

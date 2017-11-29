@@ -43,6 +43,10 @@ var (
 	errCloseSessionForNewVersion = errors.New("closing session in order to recreate it with a new version")
 )
 
+type QuicDialer interface {
+	DialAddr(addr string, tlsConf *tls.Config, config *Config) (Session, error)
+}
+
 // DialAddr establishes a new QUIC connection to a server.
 // The hostname for SNI is taken from the given address.
 func DialAddr(addr string, tlsConf *tls.Config, config *Config) (Session, error) {

@@ -4,7 +4,7 @@ import (
 	"net"
 
 	"github.com/bifurcation/mint"
-	"github.com/lucas-clemente/quic-go/internal/utils"
+	"github.com/costinm/quicgo/internal/utils"
 )
 
 type CookieHandler struct {

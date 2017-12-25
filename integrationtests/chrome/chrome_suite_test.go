@@ -13,11 +13,11 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/lucas-clemente/quic-go/integrationtests/tools/testserver"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/utils"
+	"github.com/costinm/quicgo/integrationtests/tools/testserver"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/utils"
 
-	_ "github.com/lucas-clemente/quic-go/integrationtests/tools/testlog"
+	_ "github.com/costinm/quicgo/integrationtests/tools/testlog"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

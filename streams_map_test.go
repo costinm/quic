@@ -4,8 +4,8 @@ import (
 	"errors"
 	"sort"
 
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/qerr"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/qerr"
 
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"

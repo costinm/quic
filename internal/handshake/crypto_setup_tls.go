@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/bifurcation/mint"
-	"github.com/lucas-clemente/quic-go/internal/crypto"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
+	"github.com/costinm/quicgo/internal/crypto"
+	"github.com/costinm/quicgo/internal/protocol"
 )
 
 // ErrCloseSessionForRetry is returned by HandleCryptoStream when the server wishes to perform a stateless retry

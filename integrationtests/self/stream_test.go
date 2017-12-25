@@ -7,10 +7,10 @@ import (
 	"io/ioutil"
 	"sync"
 
-	"github.com/lucas-clemente/quic-go/integrationtests/tools/testserver"
+	"github.com/costinm/quicgo/integrationtests/tools/testserver"
 
-	quic "github.com/lucas-clemente/quic-go"
-	"github.com/lucas-clemente/quic-go/internal/testdata"
+	quic "github.com/costinm/quicgo"
+	"github.com/costinm/quicgo/internal/testdata"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

@@ -4,15 +4,15 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/costinm/quicgo/internal/mocks"
-	"github.com/costinm/quicgo/internal/mocks/handshake"
+	"github.com/costinm/quic/internal/mocks"
+	"github.com/costinm/quic/internal/mocks/handshake"
 
 	"github.com/bifurcation/mint"
-	"github.com/costinm/quicgo/internal/crypto"
-	"github.com/costinm/quicgo/internal/handshake"
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/testdata"
-	"github.com/costinm/quicgo/internal/wire"
+	"github.com/costinm/quic/internal/crypto"
+	"github.com/costinm/quic/internal/handshake"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/testdata"
+	"github.com/costinm/quic/internal/wire"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

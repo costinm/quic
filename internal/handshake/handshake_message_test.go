@@ -3,7 +3,7 @@ package handshake
 import (
 	"bytes"
 
-	"github.com/costinm/quicgo/qerr"
+	"github.com/costinm/quic/qerr"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

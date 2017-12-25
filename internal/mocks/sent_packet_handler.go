@@ -9,9 +9,9 @@ import (
 	time "time"
 
 	gomock "github.com/golang/mock/gomock"
-	ackhandler "github.com/costinm/quicgo/ackhandler"
-	protocol "github.com/costinm/quicgo/internal/protocol"
-	wire "github.com/costinm/quicgo/internal/wire"
+	ackhandler "github.com/costinm/quic/ackhandler"
+	protocol "github.com/costinm/quic/internal/protocol"
+	wire "github.com/costinm/quic/internal/wire"
 )
 
 // MockSentPacketHandler is a mock of SentPacketHandler interface

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	quic "github.com/costinm/quicgo"
+	quic "github.com/costinm/quic"
 
 	"golang.org/x/net/lex/httplex"
 )

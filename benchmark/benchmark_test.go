@@ -8,10 +8,10 @@ import (
 	"math/rand"
 	"net"
 
-	quic "github.com/costinm/quicgo"
-	_ "github.com/costinm/quicgo/integrationtests/tools/testlog"
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/testdata"
+	quic "github.com/costinm/quic"
+	_ "github.com/costinm/quic/integrationtests/tools/testlog"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/testdata"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

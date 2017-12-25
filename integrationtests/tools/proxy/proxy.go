@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quic/internal/protocol"
 )
 
 // Connection is a UDP connection

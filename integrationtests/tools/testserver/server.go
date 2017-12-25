@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"strconv"
 
-	quic "github.com/costinm/quicgo"
-	"github.com/costinm/quicgo/h2quic"
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/testdata"
+	quic "github.com/costinm/quic"
+	"github.com/costinm/quic/h2quic"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/testdata"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

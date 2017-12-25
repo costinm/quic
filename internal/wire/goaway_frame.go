@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/utils"
-	"github.com/costinm/quicgo/qerr"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/utils"
+	"github.com/costinm/quic/qerr"
 )
 
 // A GoawayFrame is a GOAWAY frame

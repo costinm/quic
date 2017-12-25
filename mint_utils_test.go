@@ -3,9 +3,9 @@ package quic
 import (
 	"bytes"
 
-	"github.com/costinm/quicgo/internal/crypto"
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/wire"
+	"github.com/costinm/quic/internal/crypto"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/wire"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

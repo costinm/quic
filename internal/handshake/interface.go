@@ -4,8 +4,8 @@ import (
 	"io"
 
 	"github.com/bifurcation/mint"
-	"github.com/costinm/quicgo/internal/crypto"
-	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quic/internal/crypto"
+	"github.com/costinm/quic/internal/protocol"
 )
 
 // Sealer seals a packet

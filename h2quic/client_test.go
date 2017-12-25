@@ -12,9 +12,9 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/hpack"
 
-	quic "github.com/costinm/quicgo"
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/qerr"
+	quic "github.com/costinm/quic"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/qerr"
 
 	"time"
 

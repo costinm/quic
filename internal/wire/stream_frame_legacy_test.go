@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/qerr"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/qerr"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

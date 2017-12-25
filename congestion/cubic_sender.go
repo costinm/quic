@@ -3,8 +3,8 @@ package congestion
 import (
 	"time"
 
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/utils"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/utils"
 )
 
 const (

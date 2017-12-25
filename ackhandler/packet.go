@@ -3,8 +3,8 @@ package ackhandler
 import (
 	"time"
 
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/wire"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/wire"
 )
 
 // A Packet is a packet

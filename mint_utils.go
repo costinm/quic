@@ -9,11 +9,11 @@ import (
 	"io"
 
 	"github.com/bifurcation/mint"
-	"github.com/costinm/quickgo/internal/crypto"
-	"github.com/costinm/quickgo/internal/handshake"
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/utils"
-	"github.com/costinm/quickgo/internal/wire"
+	"github.com/costinm/quicgo/internal/crypto"
+	"github.com/costinm/quicgo/internal/handshake"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/utils"
+	"github.com/costinm/quicgo/internal/wire"
 )
 
 type mintController struct {

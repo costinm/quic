@@ -6,11 +6,11 @@ import (
 	"math"
 	"time"
 
-	"github.com/costinm/quickgo/internal/congestion"
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/utils"
-	"github.com/costinm/quickgo/internal/wire"
-	"github.com/costinm/quickgo/qerr"
+	"github.com/costinm/quicgo/internal/congestion"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/utils"
+	"github.com/costinm/quicgo/internal/wire"
+	"github.com/costinm/quicgo/qerr"
 )
 
 const (

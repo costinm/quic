@@ -9,7 +9,7 @@ import (
 
 	"github.com/aead/chacha20"
 
-	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/protocol"
 )
 
 type aeadChacha20Poly1305 struct {

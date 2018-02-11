@@ -14,10 +14,10 @@ import (
 	"golang.org/x/net/http2/hpack"
 	"golang.org/x/net/idna"
 
-	quic "github.com/costinm/quickgo"
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/utils"
-	"github.com/costinm/quickgo/qerr"
+	quic "github.com/costinm/quicgo"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/utils"
+	"github.com/costinm/quicgo/qerr"
 )
 
 type roundTripperOpts struct {

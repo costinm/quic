@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"time"
 
-	"github.com/costinm/quickgo/internal/crypto"
+	"github.com/costinm/quicgo/internal/crypto"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

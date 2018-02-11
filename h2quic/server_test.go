@@ -16,10 +16,10 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/hpack"
 
-	quic "github.com/costinm/quickgo"
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/testdata"
-	"github.com/costinm/quickgo/qerr"
+	quic "github.com/costinm/quicgo"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/testdata"
+	"github.com/costinm/quicgo/qerr"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

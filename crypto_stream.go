@@ -3,9 +3,9 @@ package quic
 import (
 	"io"
 
-	"github.com/costinm/quickgo/internal/flowcontrol"
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/wire"
+	"github.com/costinm/quicgo/internal/flowcontrol"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/wire"
 )
 
 type cryptoStreamI interface {

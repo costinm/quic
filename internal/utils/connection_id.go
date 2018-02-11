@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 
-	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/protocol"
 )
 
 // GenerateConnectionID generates a connection ID using cryptographic random

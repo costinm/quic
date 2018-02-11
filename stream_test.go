@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/costinm/quickgo/internal/mocks"
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/wire"
+	"github.com/costinm/quicgo/internal/mocks"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/wire"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"

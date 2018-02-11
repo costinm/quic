@@ -9,7 +9,7 @@ import (
 	time "time"
 
 	gomock "github.com/golang/mock/gomock"
-	protocol "github.com/costinm/quickgo/internal/protocol"
+	protocol "github.com/costinm/quicgo/internal/protocol"
 )
 
 // MockSendAlgorithm is a mock of SendAlgorithm interface

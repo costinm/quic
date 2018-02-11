@@ -3,7 +3,7 @@ package quic
 import (
 	"sync"
 
-	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/protocol"
 )
 
 var bufferPool sync.Pool

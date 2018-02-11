@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/costinm/quickgo/qerr"
+	"github.com/costinm/quicgo/qerr"
 
 	"github.com/bifurcation/mint"
 	"github.com/bifurcation/mint/syntax"
-	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/protocol"
 )
 
 type extensionHandlerClient struct {

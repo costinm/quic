@@ -11,7 +11,7 @@ import (
 	"encoding/asn1"
 	"math/big"
 
-	"github.com/costinm/quickgo/internal/testdata"
+	"github.com/costinm/quicgo/internal/testdata"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

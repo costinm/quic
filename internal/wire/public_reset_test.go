@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/costinm/quickgo/internal/handshake"
-	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/handshake"
+	"github.com/costinm/quicgo/internal/protocol"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

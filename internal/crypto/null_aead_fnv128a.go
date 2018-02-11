@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/lucas-clemente/fnv128a"
-	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/protocol"
 )
 
 // nullAEAD handles not-yet encrypted packets

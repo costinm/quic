@@ -4,10 +4,10 @@ import (
 	"errors"
 
 	"github.com/golang/mock/gomock"
-	"github.com/costinm/quickgo/internal/handshake"
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/wire"
-	"github.com/costinm/quickgo/qerr"
+	"github.com/costinm/quicgo/internal/handshake"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/wire"
+	"github.com/costinm/quicgo/qerr"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

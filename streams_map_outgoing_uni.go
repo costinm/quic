@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/wire"
-	"github.com/costinm/quickgo/qerr"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/wire"
+	"github.com/costinm/quicgo/qerr"
 )
 
 type outgoingUniStreamsMap struct {

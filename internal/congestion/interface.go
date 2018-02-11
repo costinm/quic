@@ -3,7 +3,7 @@ package congestion
 import (
 	"time"
 
-	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/protocol"
 )
 
 // A SendAlgorithm performs congestion control and calculates the congestion window

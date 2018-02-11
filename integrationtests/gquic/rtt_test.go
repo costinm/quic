@@ -8,9 +8,9 @@ import (
 	"time"
 
 	_ "github.com/lucas-clemente/quic-clients" // download clients
-	"github.com/costinm/quickgo/integrationtests/tools/proxy"
-	"github.com/costinm/quickgo/integrationtests/tools/testserver"
-	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quicgo/integrationtests/tools/proxy"
+	"github.com/costinm/quicgo/integrationtests/tools/testserver"
+	"github.com/costinm/quicgo/internal/protocol"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

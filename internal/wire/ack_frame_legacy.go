@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/utils"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/utils"
 )
 
 var (

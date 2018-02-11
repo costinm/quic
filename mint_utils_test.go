@@ -6,10 +6,10 @@ import (
 	"crypto/x509"
 	"errors"
 
-	"github.com/costinm/quickgo/internal/crypto"
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/testdata"
-	"github.com/costinm/quickgo/internal/wire"
+	"github.com/costinm/quicgo/internal/crypto"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/testdata"
+	"github.com/costinm/quicgo/internal/wire"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

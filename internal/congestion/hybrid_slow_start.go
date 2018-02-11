@@ -3,8 +3,8 @@ package congestion
 import (
 	"time"
 
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/utils"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/utils"
 )
 
 // Note(pwestin): the magic clamping numbers come from the original code in

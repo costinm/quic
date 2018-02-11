@@ -8,8 +8,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	protocol "github.com/costinm/quickgo/internal/protocol"
-	wire "github.com/costinm/quickgo/internal/wire"
+	protocol "github.com/costinm/quicgo/internal/protocol"
+	wire "github.com/costinm/quicgo/internal/wire"
 )
 
 // MockCryptoStream is a mock of CryptoStream interface

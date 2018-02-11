@@ -3,7 +3,7 @@ package wire
 import (
 	"bytes"
 
-	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/protocol"
 )
 
 // Header is the header of a QUIC packet.

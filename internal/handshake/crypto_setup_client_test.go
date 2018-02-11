@@ -8,12 +8,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/costinm/quickgo/internal/crypto"
-	"github.com/costinm/quickgo/internal/mocks/crypto"
-	"github.com/costinm/quickgo/internal/protocol"
-	"github.com/costinm/quickgo/internal/testdata"
-	"github.com/costinm/quickgo/internal/utils"
-	"github.com/costinm/quickgo/qerr"
+	"github.com/costinm/quicgo/internal/crypto"
+	"github.com/costinm/quicgo/internal/mocks/crypto"
+	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quicgo/internal/testdata"
+	"github.com/costinm/quicgo/internal/utils"
+	"github.com/costinm/quicgo/qerr"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

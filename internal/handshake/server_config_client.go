@@ -7,9 +7,9 @@ import (
 	"math"
 	"time"
 
-	"github.com/costinm/quickgo/internal/crypto"
-	"github.com/costinm/quickgo/internal/utils"
-	"github.com/costinm/quickgo/qerr"
+	"github.com/costinm/quicgo/internal/crypto"
+	"github.com/costinm/quicgo/internal/utils"
+	"github.com/costinm/quicgo/qerr"
 )
 
 type serverConfigClient struct {

@@ -3,7 +3,7 @@ package qerr
 import (
 	"fmt"
 
-	"github.com/costinm/quickgo/internal/utils"
+	"github.com/costinm/quicgo/internal/utils"
 )
 
 // ErrorCode can be used as a normal error without reason.

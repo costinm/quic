@@ -9,7 +9,7 @@ import (
 
 	mint "github.com/bifurcation/mint"
 	gomock "github.com/golang/mock/gomock"
-	handshake "github.com/lucas-clemente/quic-go/internal/handshake"
+	handshake "github.com/costinm/quickgo/internal/handshake"
 )
 
 // MockTLSExtensionHandler is a mock of TLSExtensionHandler interface

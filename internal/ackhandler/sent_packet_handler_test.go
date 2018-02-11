@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/lucas-clemente/quic-go/internal/congestion"
-	"github.com/lucas-clemente/quic-go/internal/mocks"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/costinm/quickgo/internal/congestion"
+	"github.com/costinm/quickgo/internal/mocks"
+	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quickgo/internal/wire"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

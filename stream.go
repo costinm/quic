@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lucas-clemente/quic-go/internal/flowcontrol"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/costinm/quickgo/internal/flowcontrol"
+	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quickgo/internal/wire"
 )
 
 const (

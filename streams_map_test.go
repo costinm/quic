@@ -5,12 +5,12 @@ import (
 	"fmt"
 
 	"github.com/golang/mock/gomock"
-	"github.com/lucas-clemente/quic-go/internal/flowcontrol"
-	"github.com/lucas-clemente/quic-go/internal/handshake"
-	"github.com/lucas-clemente/quic-go/internal/mocks"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/wire"
-	"github.com/lucas-clemente/quic-go/qerr"
+	"github.com/costinm/quickgo/internal/flowcontrol"
+	"github.com/costinm/quickgo/internal/handshake"
+	"github.com/costinm/quickgo/internal/mocks"
+	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quickgo/internal/wire"
+	"github.com/costinm/quickgo/qerr"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

@@ -3,8 +3,8 @@ package wire
 import (
 	"bytes"
 
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/utils"
+	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quickgo/internal/utils"
 )
 
 // A StreamIDBlockedFrame is a STREAM_ID_BLOCKED frame

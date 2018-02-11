@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/lucas-clemente/quic-go/internal/congestion"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
+	"github.com/costinm/quickgo/internal/congestion"
+	"github.com/costinm/quickgo/internal/protocol"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

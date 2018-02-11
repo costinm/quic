@@ -3,9 +3,9 @@ package quic
 import (
 	"errors"
 
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/costinm/quickgo/internal/protocol"
+	"github.com/costinm/quickgo/internal/utils"
+	"github.com/costinm/quickgo/internal/wire"
 )
 
 type streamFrameSorter struct {

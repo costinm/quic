@@ -2,7 +2,7 @@ package crypto
 
 import (
 	"github.com/bifurcation/mint"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
+	"github.com/costinm/quickgo/internal/protocol"
 )
 
 const (

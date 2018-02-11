@@ -5,8 +5,8 @@ import (
 	"io"
 
 	"github.com/bifurcation/mint"
-	"github.com/lucas-clemente/quic-go/internal/crypto"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
+	"github.com/costinm/quickgo/internal/crypto"
+	"github.com/costinm/quickgo/internal/protocol"
 )
 
 // Sealer seals a packet

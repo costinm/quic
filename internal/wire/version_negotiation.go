@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"crypto/rand"
 
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/utils"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/utils"
 )
 
 // ComposeGQUICVersionNegotiation composes a Version Negotiation Packet for gQUIC

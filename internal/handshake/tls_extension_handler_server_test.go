@@ -5,7 +5,7 @@ import (
 
 	"github.com/bifurcation/mint"
 	"github.com/bifurcation/mint/syntax"
-	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quic/internal/protocol"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

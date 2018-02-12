@@ -1,6 +1,6 @@
 package utils
 
-import "github.com/costinm/quicgo/internal/protocol"
+import "github.com/costinm/quic/internal/protocol"
 
 // ByteInterval is an interval from one ByteCount to the other
 // +gen linkedlist

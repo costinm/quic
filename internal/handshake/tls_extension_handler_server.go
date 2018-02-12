@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/costinm/quicgo/qerr"
+	"github.com/costinm/quic/qerr"
 
 	"github.com/bifurcation/mint"
 	"github.com/bifurcation/mint/syntax"
-	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quic/internal/protocol"
 )
 
 type extensionHandlerServer struct {

@@ -3,7 +3,7 @@ package congestion
 import (
 	"time"
 
-	"github.com/costinm/quicgo/internal/utils"
+	"github.com/costinm/quic/internal/utils"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

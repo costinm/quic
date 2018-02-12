@@ -9,9 +9,9 @@ import (
 	"strings"
 	"sync"
 
-	quic "github.com/costinm/quicgo"
+	quic "github.com/costinm/quic"
 
-	"github.com/costinm/quicgo/qerr"
+	"github.com/costinm/quic/qerr"
 	"golang.org/x/net/lex/httplex"
 )
 

@@ -4,9 +4,9 @@ import (
 	"errors"
 
 	"github.com/golang/mock/gomock"
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/wire"
-	"github.com/costinm/quicgo/qerr"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/wire"
+	"github.com/costinm/quic/qerr"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

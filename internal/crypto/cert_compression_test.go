@@ -8,7 +8,7 @@ import (
 	"errors"
 	"hash/fnv"
 
-	"github.com/costinm/quicgo-certificates"
+	"github.com/costinm/quic-certificates"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

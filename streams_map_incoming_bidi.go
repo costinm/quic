@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/wire"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/wire"
 )
 
 type incomingBidiStreamsMap struct {

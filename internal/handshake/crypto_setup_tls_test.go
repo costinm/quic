@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/bifurcation/mint"
-	"github.com/costinm/quicgo/internal/crypto"
-	"github.com/costinm/quicgo/internal/mocks/crypto"
-	"github.com/costinm/quicgo/internal/mocks/handshake"
-	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quic/internal/crypto"
+	"github.com/costinm/quic/internal/mocks/crypto"
+	"github.com/costinm/quic/internal/mocks/handshake"
+	"github.com/costinm/quic/internal/protocol"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

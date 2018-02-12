@@ -3,7 +3,7 @@ package chrome_test
 import (
 	"fmt"
 
-	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quic/internal/protocol"
 
 	. "github.com/onsi/ginkgo"
 )

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/costinm/quicgo/internal/handshake"
-	"github.com/costinm/quicgo/internal/protocol"
-	"github.com/costinm/quicgo/internal/utils"
-	"github.com/costinm/quicgo/internal/wire"
-	"github.com/costinm/quicgo/qerr"
+	"github.com/costinm/quic/internal/handshake"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/utils"
+	"github.com/costinm/quic/internal/wire"
+	"github.com/costinm/quic/qerr"
 )
 
 type streamsMapLegacy struct {

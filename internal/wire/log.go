@@ -1,6 +1,6 @@
 package wire
 
-import "github.com/costinm/quicgo/internal/utils"
+import "github.com/costinm/quic/internal/utils"
 
 // LogFrame logs a frame, either sent or received
 func LogFrame(frame Frame, sent bool) {

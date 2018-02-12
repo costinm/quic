@@ -5,7 +5,7 @@ import (
 	"hash/fnv"
 
 	"github.com/hashicorp/golang-lru"
-	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quic/internal/protocol"
 )
 
 var (

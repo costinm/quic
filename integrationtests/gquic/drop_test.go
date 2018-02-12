@@ -8,9 +8,9 @@ import (
 	"strconv"
 
 	_ "github.com/lucas-clemente/quic-clients" // download clients
-	"github.com/costinm/quicgo/integrationtests/tools/proxy"
-	"github.com/costinm/quicgo/integrationtests/tools/testserver"
-	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quic/integrationtests/tools/proxy"
+	"github.com/costinm/quic/integrationtests/tools/testserver"
+	"github.com/costinm/quic/internal/protocol"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

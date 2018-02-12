@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"runtime"
 
-	_ "github.com/costinm/quicgo/integrationtests/tools/testlog"
-	"github.com/costinm/quicgo/integrationtests/tools/testserver"
+	_ "github.com/costinm/quic/integrationtests/tools/testlog"
+	"github.com/costinm/quic/integrationtests/tools/testserver"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

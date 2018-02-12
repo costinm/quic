@@ -7,7 +7,7 @@ import (
 	"crypto/tls"
 	"reflect"
 
-	"github.com/costinm/quicgo/internal/testdata"
+	"github.com/costinm/quic/internal/testdata"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

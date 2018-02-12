@@ -3,7 +3,7 @@ package congestion
 import (
 	"time"
 
-	"github.com/costinm/quicgo/internal/protocol"
+	"github.com/costinm/quic/internal/protocol"
 )
 
 // Bandwidth of a connection

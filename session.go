@@ -10,15 +10,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lucas-clemente/quic-go/internal/ackhandler"
-	"github.com/lucas-clemente/quic-go/internal/congestion"
-	"github.com/lucas-clemente/quic-go/internal/crypto"
-	"github.com/lucas-clemente/quic-go/internal/flowcontrol"
-	"github.com/lucas-clemente/quic-go/internal/handshake"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/internal/wire"
-	"github.com/lucas-clemente/quic-go/qerr"
+	"github.com/costinm/quic/internal/ackhandler"
+	"github.com/costinm/quic/internal/congestion"
+	"github.com/costinm/quic/internal/crypto"
+	"github.com/costinm/quic/internal/flowcontrol"
+	"github.com/costinm/quic/internal/handshake"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/utils"
+	"github.com/costinm/quic/internal/wire"
+	"github.com/costinm/quic/qerr"
 )
 
 type unpacker interface {

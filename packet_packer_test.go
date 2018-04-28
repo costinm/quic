@@ -5,10 +5,10 @@ import (
 	"net"
 
 	"github.com/golang/mock/gomock"
-	"github.com/lucas-clemente/quic-go/internal/ackhandler"
-	"github.com/lucas-clemente/quic-go/internal/handshake"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/costinm/quic/internal/ackhandler"
+	"github.com/costinm/quic/internal/handshake"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/wire"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

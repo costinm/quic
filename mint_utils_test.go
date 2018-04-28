@@ -6,11 +6,11 @@ import (
 	"crypto/x509"
 	"errors"
 
-	"github.com/lucas-clemente/quic-go/internal/crypto"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/testdata"
-	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/costinm/quic/internal/crypto"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/testdata"
+	"github.com/costinm/quic/internal/utils"
+	"github.com/costinm/quic/internal/wire"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )

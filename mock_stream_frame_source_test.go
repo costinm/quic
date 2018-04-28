@@ -8,8 +8,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	protocol "github.com/lucas-clemente/quic-go/internal/protocol"
-	wire "github.com/lucas-clemente/quic-go/internal/wire"
+	protocol "github.com/costinm/quic/internal/protocol"
+	wire "github.com/costinm/quic/internal/wire"
 )
 
 // MockStreamFrameSource is a mock of StreamFrameSource interface

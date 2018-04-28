@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	protocol "github.com/lucas-clemente/quic-go/internal/protocol"
+	protocol "github.com/costinm/quic/internal/protocol"
 )
 
 // MockAEAD is a mock of AEAD interface

@@ -8,9 +8,9 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	handshake "github.com/lucas-clemente/quic-go/internal/handshake"
-	protocol "github.com/lucas-clemente/quic-go/internal/protocol"
-	wire "github.com/lucas-clemente/quic-go/internal/wire"
+	handshake "github.com/costinm/quic/internal/handshake"
+	protocol "github.com/costinm/quic/internal/protocol"
+	wire "github.com/costinm/quic/internal/wire"
 )
 
 // MockStreamManager is a mock of StreamManager interface

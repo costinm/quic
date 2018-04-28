@@ -12,9 +12,9 @@ import (
 	"golang.org/x/net/http2/hpack"
 	"golang.org/x/net/lex/httplex"
 
-	quic "github.com/lucas-clemente/quic-go"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/utils"
+	quic "github.com/costinm/quic"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/utils"
 )
 
 type requestWriter struct {

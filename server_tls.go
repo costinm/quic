@@ -7,12 +7,12 @@ import (
 	"net"
 
 	"github.com/bifurcation/mint"
-	"github.com/lucas-clemente/quic-go/internal/crypto"
-	"github.com/lucas-clemente/quic-go/internal/handshake"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/internal/wire"
-	"github.com/lucas-clemente/quic-go/qerr"
+	"github.com/costinm/quic/internal/crypto"
+	"github.com/costinm/quic/internal/handshake"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/utils"
+	"github.com/costinm/quic/internal/wire"
+	"github.com/costinm/quic/qerr"
 )
 
 type nullAEAD struct {

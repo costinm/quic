@@ -3,10 +3,10 @@ package ackhandler
 import (
 	"time"
 
-	"github.com/lucas-clemente/quic-go/internal/congestion"
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/costinm/quic/internal/congestion"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/utils"
+	"github.com/costinm/quic/internal/wire"
 )
 
 type receivedPacketHandler struct {

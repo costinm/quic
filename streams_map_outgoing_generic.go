@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/lucas-clemente/quic-go/internal/wire"
-	"github.com/lucas-clemente/quic-go/qerr"
+	"github.com/costinm/quic/internal/protocol"
+	"github.com/costinm/quic/internal/wire"
+	"github.com/costinm/quic/qerr"
 )
 
 //go:generate genny -in $GOFILE -out streams_map_outgoing_bidi.go gen "item=streamI Item=BidiStream"

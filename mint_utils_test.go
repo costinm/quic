@@ -9,6 +9,7 @@ import (
 	"github.com/lucas-clemente/quic-go/internal/crypto"
 	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/testdata"
+	"github.com/lucas-clemente/quic-go/internal/utils"
 	"github.com/lucas-clemente/quic-go/internal/wire"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -16,14 +17,15 @@ import (
 
 var _ = Describe("Packing and unpacking Initial packets", func() {
 	var aead crypto.AEAD
-	connID := protocol.ConnectionID(0x1337)
+	connID := protocol.ConnectionID{1, 2, 3, 4, 5, 6, 7, 8}
 	ver := protocol.VersionTLS
 	hdr := &wire.Header{
-		IsLongHeader: true,
-		Type:         protocol.PacketTypeRetry,
-		PacketNumber: 0x42,
-		ConnectionID: connID,
-		Version:      ver,
+		IsLongHeader:     true,
+		Type:             protocol.PacketTypeRetry,
+		PacketNumber:     0x42,
+		DestConnectionID: connID,
+		SrcConnectionID:  connID,
+		Version:          ver,
 	}
 
 	BeforeEach(func() {
@@ -54,7 +56,9 @@ var _ = Describe("Packing and unpacking Initial packets", func() {
 
 		It("copies values from the tls.Config", func() {
 			verifyErr := errors.New("test err")
+			certPool := &x509.CertPool{}
 			tlsConf := &tls.Config{
+				RootCAs:            certPool,
 				ServerName:         "www.example.com",
 				InsecureSkipVerify: true,
 				VerifyPeerCertificate: func(_ [][]byte, _ [][]*x509.Certificate) error {
@@ -63,6 +67,7 @@ var _ = Describe("Packing and unpacking Initial packets", func() {
 			}
 			mintConf, err := tlsToMintConfig(tlsConf, protocol.PerspectiveClient)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(mintConf.RootCAs).To(Equal(certPool))
 			Expect(mintConf.ServerName).To(Equal("www.example.com"))
 			Expect(mintConf.InsecureSkipVerify).To(BeTrue())
 			Expect(mintConf.VerifyPeerCertificate(nil, nil)).To(MatchError(verifyErr))
@@ -92,6 +97,7 @@ var _ = Describe("Packing and unpacking Initial packets", func() {
 			Expect(err).ToNot(HaveOccurred())
 			payloadStartIndex := buf.Len()
 			aeadCl, err := crypto.NewNullAEAD(protocol.PerspectiveClient, connID, ver)
+			Expect(err).ToNot(HaveOccurred())
 			for _, f := range frames {
 				err := f.Write(buf, ver)
 				Expect(err).ToNot(HaveOccurred())
@@ -106,14 +112,14 @@ var _ = Describe("Packing and unpacking Initial packets", func() {
 				Data:     []byte("foobar"),
 			}
 			p := packPacket([]wire.Frame{f})
-			frame, err := unpackInitialPacket(aead, hdr, p, ver)
+			frame, err := unpackInitialPacket(aead, hdr, p, utils.DefaultLogger, ver)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(frame).To(Equal(f))
 		})
 
 		It("rejects a packet that doesn't contain a STREAM_FRAME", func() {
 			p := packPacket([]wire.Frame{&wire.PingFrame{}})
-			_, err := unpackInitialPacket(aead, hdr, p, ver)
+			_, err := unpackInitialPacket(aead, hdr, p, utils.DefaultLogger, ver)
 			Expect(err).To(MatchError("Packet doesn't contain a STREAM_FRAME"))
 		})
 
@@ -123,8 +129,8 @@ var _ = Describe("Packing and unpacking Initial packets", func() {
 				Data:     []byte("foobar"),
 			}
 			p := packPacket([]wire.Frame{f})
-			_, err := unpackInitialPacket(aead, hdr, p, ver)
-			Expect(err).To(MatchError("UnencryptedStreamData: received unencrypted stream data on stream 42"))
+			_, err := unpackInitialPacket(aead, hdr, p, utils.DefaultLogger, ver)
+			Expect(err).To(MatchError("Received STREAM_FRAME for wrong stream (Stream ID 42)"))
 		})
 
 		It("rejects a packet that has a STREAM_FRAME with a non-zero offset", func() {
@@ -134,30 +140,26 @@ var _ = Describe("Packing and unpacking Initial packets", func() {
 				Data:     []byte("foobar"),
 			}
 			p := packPacket([]wire.Frame{f})
-			_, err := unpackInitialPacket(aead, hdr, p, ver)
+			_, err := unpackInitialPacket(aead, hdr, p, utils.DefaultLogger, ver)
 			Expect(err).To(MatchError("received stream data with non-zero offset"))
 		})
 	})
 
 	Context("packing", func() {
-		var unpacker *packetUnpacker
-
-		BeforeEach(func() {
-			aeadCl, err := crypto.NewNullAEAD(protocol.PerspectiveClient, connID, ver)
-			Expect(err).ToNot(HaveOccurred())
-			unpacker = &packetUnpacker{aead: &nullAEAD{aeadCl}, version: ver}
-		})
-
 		It("packs a packet", func() {
 			f := &wire.StreamFrame{
 				Data:   []byte("foobar"),
 				FinBit: true,
 			}
-			data, err := packUnencryptedPacket(aead, hdr, f, protocol.PerspectiveServer)
+			data, err := packUnencryptedPacket(aead, hdr, f, protocol.PerspectiveServer, utils.DefaultLogger)
 			Expect(err).ToNot(HaveOccurred())
-			packet, err := unpacker.Unpack(hdr.Raw, hdr, data[len(hdr.Raw):])
+			aeadCl, err := crypto.NewNullAEAD(protocol.PerspectiveClient, connID, ver)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(packet.frames).To(Equal([]wire.Frame{f}))
+			decrypted, err := aeadCl.Open(nil, data[len(hdr.Raw):], hdr.PacketNumber, hdr.Raw)
+			Expect(err).ToNot(HaveOccurred())
+			frame, err := wire.ParseNextFrame(bytes.NewReader(decrypted), hdr, versionIETFFrames)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(frame).To(Equal(f))
 		})
 	})
 })

@@ -52,6 +52,8 @@ type client struct {
 
 	// Responses pending header receipt.
 	responses map[protocol.StreamID]chan *http.Response
+
+	logger utils.Logger
 }
 
 var _ http.RoundTripper = &client{}
@@ -81,6 +83,7 @@ func newClient(
 		opts:          opts,
 		headerErrored: make(chan struct{}),
 		dialer:        dialer,
+		logger:        utils.DefaultLogger,
 	}
 }
 
@@ -101,7 +104,7 @@ func (c *client) dial() error {
 	if err != nil {
 		return err
 	}
-	c.requestWriter = newRequestWriter(c.headerStream)
+	c.requestWriter = newRequestWriter(c.headerStream, c.logger)
 	go c.handleHeaderStream()
 	return nil
 }
@@ -114,7 +117,9 @@ func (c *client) handleHeaderStream() {
 	for err == nil {
 		err = c.readResponse(h2framer, decoder)
 	}
-	utils.Debugf("Error handling header stream: %s", err)
+	if quicErr, ok := err.(*qerr.QuicError); !ok || quicErr.ErrorCode != qerr.PeerGoingAway {
+		c.logger.Debugf("Error handling header stream: %s", err)
+	}
 	c.headerErr = qerr.Error(qerr.InvalidHeadersStreamData, err.Error())
 	// stop all running request
 	close(c.headerErrored)
@@ -206,7 +211,9 @@ func (c *client) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	// Wait until the response headers are fully received or an error happened.
 	// The request and response body are still open.
+	ctx := req.Context()
 	for !(receivedResponse) {
+	// for !(bodySent && receivedResponse) {
 		select {
 		case res = <-responseChan:
 			receivedResponse = true
@@ -220,8 +227,16 @@ func (c *client) RoundTrip(req *http.Request) (*http.Response, error) {
 				return nil, err
 			}
 			// Body was sent without errors. Continue to wait for response.
+		case <-ctx.Done():
+			// error code 6 signals that stream was canceled
+			dataStream.CancelRead(6)
+			dataStream.CancelWrite(6)
+			c.mutex.Lock()
+			delete(c.responses, dataStream.StreamID())
+			c.mutex.Unlock()
+			return nil, ctx.Err()
 		case <-c.headerErrored:
-			// an error occured on the header stream
+			// an error occurred on the header stream
 			_ = c.CloseWithError(c.headerErr)
 			return nil, c.headerErr
 		}

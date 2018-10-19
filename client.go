@@ -234,6 +234,7 @@ func (c *client) dialTLS() error {
 		if err := c.establishSecureConnection(); err != nil {
 			return err
 		}
+		//c.tls.ConnectionState().PeerCertificates
 	}
 	return nil
 }

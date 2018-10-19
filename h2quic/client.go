@@ -151,6 +151,11 @@ func (c *client) readResponse(h2framer *http2.Framer, decoder *hpack.Decoder) er
 	if err != nil {
 		return err
 	}
+
+	rsp.TLS = &tls.ConnectionState{
+		PeerCertificates: c.session.ConnectionState().PeerCertificates,
+	}
+
 	responseChan <- rsp
 	return nil
 }
@@ -213,7 +218,7 @@ func (c *client) RoundTrip(req *http.Request) (*http.Response, error) {
 	// The request and response body are still open.
 	ctx := req.Context()
 	for !(receivedResponse) {
-	// for !(bodySent && receivedResponse) {
+		// for !(bodySent && receivedResponse) {
 		select {
 		case res = <-responseChan:
 			receivedResponse = true

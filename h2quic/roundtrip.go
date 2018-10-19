@@ -9,8 +9,9 @@ import (
 	"strings"
 	"sync"
 
-	quic "github.com/costinm/quic"
+	"github.com/costinm/quic"
 
+	"github.com/costinm/quic/internal/handshake"
 	"github.com/costinm/quic/qerr"
 	"golang.org/x/net/lex/httplex"
 )
@@ -111,7 +112,8 @@ func (r *RoundTripper) RoundTripOpt(req *http.Request, opt RoundTripOpt) (*http.
 // RoundTrip does a round trip.
 func (r *RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	res, err := r.RoundTripOpt(req, RoundTripOpt{})
-	if qErr, ok := err.(*qerr.QuicError); ok &&
+	qErr, ok := err.(*qerr.QuicError)
+	if err != nil || err == handshake.ErrCloseSessionForRetry || ok &&
 		(qErr.ErrorCode == qerr.NetworkIdleTimeout ||
 			qErr.ErrorCode == qerr.PublicReset) {
 

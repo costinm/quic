@@ -50,6 +50,7 @@ type cryptoSetupServer struct {
 	keyExchange   KeyExchangeFunction
 
 	cryptoStream io.ReadWriter
+	certManager  crypto.CertManager
 
 	params *TransportParameters
 
@@ -100,11 +101,12 @@ func NewCryptoSetup(
 		keyExchange:          getEphermalKEX,
 		nullAEAD:             nullAEAD,
 		params:               params,
-		acceptSTKCallback:    acceptSTK,
-		sentSHLO:             make(chan struct{}),
-		paramsChan:           paramsChan,
-		handshakeEvent:       handshakeEvent,
-		logger:               logger,
+		//costin certManager:          crypto.NewCertManager(tlsConfig),
+		acceptSTKCallback: acceptSTK,
+		sentSHLO:          make(chan struct{}),
+		paramsChan:        paramsChan,
+		handshakeEvent:    handshakeEvent,
+		logger:            logger,
 	}, nil
 }
 
@@ -457,7 +459,9 @@ func (h *cryptoSetupServer) ConnectionState() ConnectionState {
 	return ConnectionState{
 		ServerName:        h.sni,
 		HandshakeComplete: h.receivedForwardSecurePacket,
+		//PeerCertificates:  h.certManager.GetChain(),
 	}
+	// TODO: costin
 }
 
 func (h *cryptoSetupServer) validateClientNonce(nonce []byte) error {

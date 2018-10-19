@@ -163,5 +163,6 @@ func (h *cryptoSetupTLS) ConnectionState() ConnectionState {
 		// TODO: set the ServerName, once mint exports it
 		HandshakeComplete: h.aead != nil,
 		PeerCertificates:  mintConnState.PeerCertificates,
+		// VerififedCertificates
 	}
 }

@@ -1016,7 +1016,7 @@ func (state serverStateWaitCV) Next(hr handshakeMessageReader) (HandshakeState, 
 		serverTrafficSecret:          state.serverTrafficSecret,
 		exporterSecret:               state.exporterSecret,
 		peerCertificates:             certs,
-		verifiedChains:               nil, // TODO(#171): set this value
+		verifiedChains:               [][]*x509.Certificate{certs}, // TODO(#171): set this value
 	}
 	return nextState, nil, AlertNoAlert
 }

@@ -147,12 +147,10 @@ func CertificateSelection(serverName *string, signatureSchemes []SignatureScheme
 			}
 		}
 
-		if len(candidatesByName) == 0 {
-			//return nil, 0, fmt.Errorf("No certificates available for server name: %s", *serverName)
-			candidatesByName = append(candidatesByName, certs...)
+		if len(candidatesByName) > 0 {
+		        candidates = candidatesByName
 		}
-
-		candidates = candidatesByName
+	        // If no explicit match - use the defaults. Typically means using the default certificate.
 	}
 
 	// Select for signature scheme

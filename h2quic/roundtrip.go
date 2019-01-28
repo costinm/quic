@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"sync"
@@ -48,6 +49,7 @@ type RoundTripper struct {
 	// If Dial is nil, quic.DialAddr will be used.
 	Dial func(network, addr string, tlsCfg *tls.Config, cfg *quic.Config) (quic.Session, error)
 
+	// clients holds active connections to hosts
 	clients map[string]roundTripCloser
 }
 
@@ -113,9 +115,9 @@ func (r *RoundTripper) RoundTripOpt(req *http.Request, opt RoundTripOpt) (*http.
 func (r *RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	res, err := r.RoundTripOpt(req, RoundTripOpt{})
 	qErr, ok := err.(*qerr.QuicError)
-	if err != nil || err == handshake.ErrCloseSessionForRetry || ok &&
-		(qErr.ErrorCode == qerr.NetworkIdleTimeout ||
-			qErr.ErrorCode == qerr.PublicReset) {
+	if err != nil ||
+		err == handshake.ErrCloseSessionForRetry ||
+		ok && (qErr.ErrorCode == qerr.NetworkIdleTimeout || qErr.ErrorCode == qerr.PublicReset) {
 
 		r.mutex.Lock()
 		if r.clients == nil {
@@ -125,6 +127,7 @@ func (r *RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 		client, ok := r.clients[hostname]
 		if ok {
 			client.Close()
+			log.Println("Reset connection ", hostname, err)
 			delete(r.clients, hostname)
 		}
 		r.mutex.Unlock()

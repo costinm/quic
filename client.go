@@ -297,6 +297,12 @@ func (c *client) listen() {
 		}
 		if err := c.handlePacket(addr, data[:n]); err != nil {
 			c.logger.Errorf("error handling packet: %s", err.Error())
+			c.mutex.Lock()
+			if c.session != nil {
+				c.session.Close(err)
+			}
+			c.mutex.Unlock()
+			break
 		}
 	}
 }

@@ -101,7 +101,7 @@ func parseShortHeader(b *bytes.Reader, typeByte byte) (*Header, error) {
 	}
 	// bits 2 and 3 must be set, bit 4 must be unset
 	if typeByte&0x38 != 0x30 {
-		return nil, errors.New("invalid bits 3, 4 and 5")
+		return nil, fmt.Errorf("invalid bits 3, 4 and 5 %x %v", typeByte, connID)
 	}
 	var pnLen protocol.PacketNumberLen
 	switch typeByte & 0x3 {

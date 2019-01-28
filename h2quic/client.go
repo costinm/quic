@@ -142,6 +142,13 @@ func (c *client) readResponse(h2framer *http2.Framer, decoder *hpack.Decoder) er
 	if err != nil {
 		return err
 	}
+
+	// Return the peer cert
+	if rsp.TLS == nil {
+		rsp.TLS = &tls.ConnectionState{}
+	}
+	rsp.TLS.PeerCertificates = c.session.ConnectionState().PeerCertificates
+
 	responseChan <- rsp
 	return nil
 }
@@ -198,14 +205,14 @@ func (c *client) RoundTrip(req *http.Request) (*http.Response, error) {
 	var res *http.Response
 
 	var receivedResponse bool
-	var bodySent bool
-
-	if !hasBody {
-		bodySent = true
-	}
+	//var bodySent bool
+	//
+	//if !hasBody {
+	//	bodySent = true
+	//}
 
 	ctx := req.Context()
-	for !(bodySent && receivedResponse) {
+	for !( /*costin: bidi stream bodySent && */ receivedResponse) {
 		select {
 		case res = <-responseChan:
 			receivedResponse = true
@@ -213,7 +220,7 @@ func (c *client) RoundTrip(req *http.Request) (*http.Response, error) {
 			delete(c.responses, dataStream.StreamID())
 			c.mutex.Unlock()
 		case err := <-resc:
-			bodySent = true
+			//			bodySent = true
 			if err != nil {
 				return nil, err
 			}
